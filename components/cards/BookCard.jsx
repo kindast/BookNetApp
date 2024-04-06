@@ -1,6 +1,6 @@
-import {Image, Text, TouchableOpacity, View} from 'react-native';
-import {COLORS, FONT, icons} from '../../constants';
-import {useSelector} from 'react-redux';
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { COLORS, FONT, icons } from "../../constants";
+import { useSelector } from "react-redux";
 
 export default function BookCard({
   title,
@@ -10,10 +10,10 @@ export default function BookCard({
   onPress,
   style,
 }) {
-  const isDarkMode = useSelector(state => state.settings.isDarkMode);
+  const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={{width: 180, ...style}}>
+      <View style={{ width: 180, ...style }}>
         <Image
           source={{
             uri: image,
@@ -21,9 +21,9 @@ export default function BookCard({
           style={{
             width: 180,
             height: 280,
-            resizeMode: 'stretch',
+            resizeMode: "stretch",
             borderRadius: 11,
-            backgroundColor: isDarkMode ? '#e0e0e2' : '#767575',
+            backgroundColor: isDarkMode ? "#e0e0e2" : "#767575",
           }}
         />
         <Text
@@ -33,32 +33,36 @@ export default function BookCard({
             fontFamily: FONT.bold,
             color: isDarkMode ? COLORS.white : COLORS.black,
             marginTop: 8,
-          }}>
+          }}
+        >
           {title}
         </Text>
         <View
-          style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 5 }}
+        >
           <Image
             source={isDarkMode ? icons.starLight : icons.star}
-            style={{width: 14, height: 14}}
+            style={{ width: 14, height: 14 }}
           />
           <Text
             style={{
-              color: isDarkMode ? '#e0e0e2' : '#767575',
+              color: isDarkMode ? "#e0e0e2" : "#767575",
               fontSize: 14,
               fontFamily: FONT.bold,
               marginLeft: 8,
-            }}>
+            }}
+          >
             {rating}
           </Text>
           <Text
             style={{
-              color: isDarkMode ? '#e0e0e2' : '#767575',
+              color: isDarkMode ? "#e0e0e2" : "#767575",
               fontSize: 14,
               fontFamily: FONT.bold,
               marginLeft: 14,
-            }}>
-            {price}
+            }}
+          >
+            {price}₽
           </Text>
         </View>
       </View>

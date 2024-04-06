@@ -10,7 +10,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { useSelector } from "react-redux";
-import { COLORS, FONT, SIZES, icons } from "../../constants";
+import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import Button from "../../components/controls/Button";
@@ -22,7 +22,13 @@ export default function BookDetailsScreen({ route }) {
   const navigation = useNavigation();
   const [rateStars, setRateStars] = useState(0);
   const { id } = route.params;
-  const { data, isLoading, refetch } = useFetch("books", { id: id });
+  const { data, isLoading, refetch } = useFetch("book", { id: id });
+  const countReviews = (stars) => {
+    let procent =
+      data?.reviews?.filter((review) => review.stars === stars).length /
+      data?.reviews?.length;
+    return procent ? procent : 0;
+  };
   return isLoading ? (
     <View
       style={{
@@ -76,7 +82,7 @@ export default function BookDetailsScreen({ route }) {
         <View style={{ marginTop: 35, flexDirection: "row" }}>
           <Image
             source={{
-              uri: data?.image,
+              uri: api + data?.coverUrl,
             }}
             style={{
               height: 230,
@@ -107,7 +113,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 15,
               }}
             >
-              {data?.author}
+              {data?.author?.firstName + " " + data?.author?.lastName}
             </Text>
             <Text
               adjustsFontSizeToFit
@@ -119,7 +125,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 15,
               }}
             >
-              Released on {data?.release}
+              Released on {data?.releaseDate}
             </Text>
             <View
               style={{
@@ -148,7 +154,7 @@ export default function BookDetailsScreen({ route }) {
                       color: isDarkMode ? "#e0e0e0" : "#737373",
                     }}
                   >
-                    {genre}
+                    {genre.name}
                   </Text>
                 </View>
               ))}
@@ -197,7 +203,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 6,
               }}
             >
-              6.8K reviews
+              {data?.reviews?.length} reviews
             </Text>
           </View>
           <View
@@ -219,7 +225,7 @@ export default function BookDetailsScreen({ route }) {
                 color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
               }}
             >
-              5.6 MB
+              {data?.size}
             </Text>
             <Text
               style={{
@@ -251,7 +257,7 @@ export default function BookDetailsScreen({ route }) {
                 color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
               }}
             >
-              784
+              {data?.pages}
             </Text>
             <Text
               style={{
@@ -321,10 +327,7 @@ export default function BookDetailsScreen({ route }) {
             marginTop: 25,
           }}
         >
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae,
-          mollitia a. Inventore at error iste molestias quas vitae, velit sed
-          pariatur reprehenderit maxime eum consequuntur animi nobis ipsa
-          aperiam ab.
+          {data?.description}
         </Text>
         <DetailsButton
           title={"Ratings & Reviews"}
@@ -430,7 +433,7 @@ export default function BookDetailsScreen({ route }) {
                 color: isDarkMode ? COLORS.white : COLORS.black,
               }}
             >
-              (6.8K reviews)
+              ({data?.reviews?.length} reviews)
             </Text>
           </View>
           <View
@@ -458,7 +461,7 @@ export default function BookDetailsScreen({ route }) {
                 5
               </Text>
               <ProgressBar
-                progress={0.3}
+                progress={countReviews(5)}
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -482,7 +485,7 @@ export default function BookDetailsScreen({ route }) {
                 4
               </Text>
               <ProgressBar
-                progress={0.1}
+                progress={countReviews(4)}
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -506,7 +509,7 @@ export default function BookDetailsScreen({ route }) {
                 3
               </Text>
               <ProgressBar
-                progress={0.5}
+                progress={countReviews(3)}
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -530,7 +533,7 @@ export default function BookDetailsScreen({ route }) {
                 2
               </Text>
               <ProgressBar
-                progress={0.1}
+                progress={countReviews(2)}
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -554,7 +557,7 @@ export default function BookDetailsScreen({ route }) {
                 1
               </Text>
               <ProgressBar
-                progress={0}
+                progress={countReviews(1)}
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}

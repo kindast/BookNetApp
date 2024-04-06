@@ -1,14 +1,46 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, FONT, SIZES, icons } from "../../constants";
+import {
+  BackHandler,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 import Input from "../../components/controls/Input";
 import Button from "../../components/controls/Button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CodeInput from "../../components/controls/CodeInput";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { setUser } from "../../redux/slices/authSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function OTPCodeScreen() {
+export default function OTPCodeScreen({ route }) {
   const navigation = useNavigation();
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const dispatch = useDispatch();
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
+  const { verifyAccount, email } = route.params;
+
+  useEffect(() => {
+    const backAction = () => {
+      if (verifyAccount) {
+        navigation.popToTop();
+      } else {
+        navigation.goBack();
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <View
@@ -22,7 +54,11 @@ export default function OTPCodeScreen() {
       <View style={styles.container}>
         <TouchableOpacity
           onPress={() => {
-            navigation.goBack();
+            if (verifyAccount) {
+              navigation.popToTop();
+            } else {
+              navigation.goBack();
+            }
           }}
         >
           <Image
@@ -51,7 +87,17 @@ export default function OTPCodeScreen() {
           We have sent the OTP verification code to your email address. Check
           your email and enter the code below.
         </Text>
-        <CodeInput style={{ marginTop: 50 }} />
+        <CodeInput style={{ marginTop: 50 }} onCodeChange={setCode} />
+        <Text
+          style={{
+            fontFamily: FONT.regular,
+            fontSize: 16,
+            color: "#ff628c",
+            marginTop: 10,
+          }}
+        >
+          {error}
+        </Text>
       </View>
       <View
         style={{
@@ -66,7 +112,38 @@ export default function OTPCodeScreen() {
           title="Confirm"
           showShadow={true}
           onPress={() => {
-            navigation.replace("createnewpassword");
+            if (verifyAccount && code.length === 4) {
+              axios
+                .get(api + "/api/verify-account", {
+                  params: { email, code },
+                })
+                .then(async (response) => {
+                  let data = response.data;
+                  console.log(data);
+                  await AsyncStorage.setItem("user", JSON.stringify(data));
+                  dispatch(setUser(data));
+                })
+                .catch((error) => {
+                  if (error.response.status === 403) {
+                    navigation.popToTop();
+                  } else {
+                    setError("Invalid code");
+                  }
+                });
+            } else if (code.length < 4) {
+              setError("Please enter a valid code");
+            } else if (!verifyAccount) {
+              axios
+                .get(api + "/api/verify-code", {
+                  params: { email: email, code },
+                })
+                .then((response) => {
+                  navigation.replace("createnewpassword", { email, code });
+                })
+                .catch((error) => {
+                  setError(error.response.data.message);
+                });
+            }
           }}
         />
       </View>

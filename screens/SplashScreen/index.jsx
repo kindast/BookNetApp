@@ -5,14 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 
 export default function SplashScreen() {
-  const navigation = useNavigation();
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      navigation.replace("welcome");
-    }, 500);
-  }, []);
 
   return (
     <View

@@ -1,13 +1,18 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, FONT, SIZES, icons } from "../../constants";
+import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 import Input from "../../components/controls/Input";
 import Button from "../../components/controls/Button";
 import { useSelector } from "react-redux";
+import { useState } from "react";
+import axios from "axios";
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation();
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const [email, setEmail] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [error, setError] = useState("");
 
   return (
     <View
@@ -55,7 +60,32 @@ export default function ForgotPasswordScreen() {
           label="Email"
           keyboardType="email-address"
           placeholder="Email"
+          maxLength={30}
+          value={email}
+          onChangeText={setEmail}
+          validation={() => {
+            let regex = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
+            if (email.trim().length === 0) {
+              setIsEmailValid(false);
+              return "Email is required";
+            }
+            if (!regex.test(email)) {
+              setIsEmailValid(false);
+              return "Email does not match format example@email.com";
+            }
+            setIsEmailValid(true);
+          }}
         />
+        <Text
+          style={{
+            fontFamily: FONT.regular,
+            fontSize: 16,
+            color: "#ff628c",
+            marginTop: 10,
+          }}
+        >
+          {error}
+        </Text>
       </View>
       <View
         style={{
@@ -70,7 +100,19 @@ export default function ForgotPasswordScreen() {
           title="Continue"
           showShadow={true}
           onPress={() => {
-            navigation.replace("OTPCode");
+            if (isEmailValid) {
+              axios
+                .get(api + "/api/send-recovery-code", { params: { email } })
+                .then((response) => {
+                  navigation.replace("OTPCode", {
+                    email,
+                    verifyAccount: false,
+                  });
+                })
+                .catch((error) => {
+                  setError(error.response.data.message);
+                });
+            }
           }}
         />
       </View>

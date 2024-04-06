@@ -13,6 +13,8 @@ import WelcomeScreen from "./WelcomeScreen";
 import WishListScreen from "./WishListScreen";
 import AboutBookScreen from "./AboutBookScreen";
 import ReviewsScreen from "./ReviewsScreen";
+import LibraryScreen from "./LibraryScreen";
+import AccountScreen from "./AccountScreen";
 
 export {
   BookDetailsScreen,
@@ -30,4 +32,6 @@ export {
   WishListScreen,
   AboutBookScreen,
   ReviewsScreen,
+  LibraryScreen,
+  AccountScreen,
 };

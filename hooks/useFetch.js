@@ -1,16 +1,17 @@
-import {useState, useEffect} from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { api } from "../constants";
 
-const useFetch = (endpoint, query, method = 'GET') => {
-  const [data, setData] = useState([]);
+const useFetch = (endpoint, query, method = "GET", fetchOnCreate = true) => {
+  const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const options = {
     method: method,
-    url: `https://65f4b0a2f54db27bc02239e2.mockapi.io/api/${endpoint}`,
+    url: `${api}/api/${endpoint}`,
     headers: {},
-    params: {...query},
+    params: { ...query },
   };
 
   const fetchData = async () => {
@@ -18,11 +19,7 @@ const useFetch = (endpoint, query, method = 'GET') => {
 
     try {
       const response = await axios.request(options);
-      if (response.data.length === 1) {
-        setData(response.data[0]);
-      } else {
-        setData(response.data);
-      }
+      setData(response.data);
       setIsLoading(false);
     } catch (error) {
       setError(error);
@@ -33,15 +30,12 @@ const useFetch = (endpoint, query, method = 'GET') => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (fetchOnCreate) {
+      fetchData();
+    }
   }, []);
 
-  const refetch = () => {
-    setIsLoading(true);
-    fetchData();
-  };
-
-  return {data, isLoading, error, refetch};
+  return { data, isLoading, error, fetchData };
 };
 
 export default useFetch;

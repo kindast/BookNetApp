@@ -5,6 +5,7 @@ import {
   Text,
   Image,
   ScrollView,
+  FlatList,
 } from "react-native";
 import { SIZES, FONT, COLORS, icons } from "../../constants";
 import { useSelector } from "react-redux";
@@ -149,7 +150,7 @@ export default function ReviewsScreen({ route }) {
                 color: isDarkMode ? COLORS.white : COLORS.black,
               }}
             >
-              (6.8K reviews)
+              ({book?.reviews?.length} reviews)
             </Text>
           </View>
           <View
@@ -177,7 +178,10 @@ export default function ReviewsScreen({ route }) {
                 5
               </Text>
               <ProgressBar
-                progress={0.3}
+                progress={
+                  book.reviews.filter((review) => review.stars === 5).length /
+                  book.reviews.length
+                }
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -201,7 +205,10 @@ export default function ReviewsScreen({ route }) {
                 4
               </Text>
               <ProgressBar
-                progress={0.1}
+                progress={
+                  book.reviews.filter((review) => review.stars === 4).length /
+                  book.reviews.length
+                }
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -225,7 +232,10 @@ export default function ReviewsScreen({ route }) {
                 3
               </Text>
               <ProgressBar
-                progress={0.5}
+                progress={
+                  book.reviews.filter((review) => review.stars === 3).length /
+                  book.reviews.length
+                }
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -249,7 +259,10 @@ export default function ReviewsScreen({ route }) {
                 2
               </Text>
               <ProgressBar
-                progress={0.1}
+                progress={
+                  book.reviews.filter((review) => review.stars === 2).length /
+                  book.reviews.length
+                }
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -273,7 +286,10 @@ export default function ReviewsScreen({ route }) {
                 1
               </Text>
               <ProgressBar
-                progress={0}
+                progress={
+                  book.reviews.filter((review) => review.stars === 1).length /
+                  book.reviews.length
+                }
                 borderWidth={0}
                 color={COLORS.primary}
                 unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
@@ -289,17 +305,21 @@ export default function ReviewsScreen({ route }) {
           }}
         />
         <View style={{ gap: 20 }}>
-          <Review />
-          <Review />
-          <Review />
-          <Review />
+          {book?.reviews?.map((review) => (
+            <Review
+              key={review.id}
+              author={review.author?.firstName}
+              text={review.text}
+              stars={review.stars}
+            />
+          ))}
         </View>
       </ScrollView>
     </View>
   );
 }
 
-const Review = () => {
+const Review = ({ author, text, stars }) => {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   return (
     <View>
@@ -326,7 +346,7 @@ const Review = () => {
               color: isDarkMode ? COLORS.white : COLORS.black,
             }}
           >
-            Author
+            {author}
           </Text>
         </View>
         <View
@@ -352,7 +372,7 @@ const Review = () => {
               fontFamily: FONT.bold,
             }}
           >
-            5
+            {stars}
           </Text>
         </View>
       </View>
@@ -365,8 +385,7 @@ const Review = () => {
           marginTop: 15,
         }}
       >
-        As a person who loves to read, this book is a great read. It is a great
-        source of information about the world and the people around it.
+        {text}
       </Text>
     </View>
   );

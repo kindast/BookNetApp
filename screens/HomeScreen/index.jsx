@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { COLORS, FONT, SIZES, icons } from "../../constants";
+import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useSelector } from "react-redux";
 import BookCard from "../../components/cards/BookCard";
 import GenreCard from "../../components/cards/GenreCard";
@@ -136,12 +136,12 @@ export default function HomeScreen() {
               <BookCard
                 title={item.title}
                 rating={item.rating}
-                image={item.image}
+                image={api + item.coverUrl}
                 price={item.price}
                 onPress={() => {
                   navigation.navigate("bookdetails", { id: item.id });
                 }}
-                style={{ marginRight: 12 }}
+                style={{ marginBottom: 12 }}
               />
             )}
           />

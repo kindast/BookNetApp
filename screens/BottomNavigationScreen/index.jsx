@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { HomeScreen, WishListScreen } from "..";
+import { AccountScreen, HomeScreen, LibraryScreen, WishListScreen } from "..";
 import { COLORS, FONT, icons } from "../../constants";
 import { Image, Text, View } from "react-native";
 import { useSelector } from "react-redux";
@@ -82,7 +82,7 @@ export default function BottomNavigationScreen() {
       />
       <Tab.Screen
         name="purchased"
-        component={WishListScreen}
+        component={LibraryScreen}
         options={{
           tabBarIcon: ({ focused }) => {
             return (
@@ -109,7 +109,7 @@ export default function BottomNavigationScreen() {
       />
       <Tab.Screen
         name="account"
-        component={WishListScreen}
+        component={AccountScreen}
         options={{
           tabBarIcon: ({ focused }) => {
             return (

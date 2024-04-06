@@ -24,6 +24,13 @@ import emptystar from "../assets/icons/emptystar.png";
 import emptystarLight from "../assets/icons/emptystarLight.png";
 import ratestar from "../assets/icons/ratestar.png";
 import ratestarLight from "../assets/icons/ratestarLight.png";
+import info from "../assets/icons/info.png";
+import infoLight from "../assets/icons/infoLight.png";
+import document from "../assets/icons/document.png";
+import documentLight from "../assets/icons/documentLight.png";
+import closedEye from "../assets/icons/closedEye.png";
+import openedEye from "../assets/icons/openedEye.png";
+import logout from "../assets/icons/logout.png";
 
 export default {
   logo,
@@ -52,4 +59,11 @@ export default {
   emptystarLight,
   ratestar,
   ratestarLight,
+  info,
+  infoLight,
+  document,
+  documentLight,
+  closedEye,
+  openedEye,
+  logout,
 };

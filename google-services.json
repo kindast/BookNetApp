@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "566495782897",
+    "project_id": "booknet-416618",
+    "storage_bucket": "booknet-416618.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566495782897:android:9bdc52b7d60baa4b5c4650",
+        "android_client_info": {
+          "package_name": "com.kindast.booknet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYZJ0OUVU0awiXc8GVcRPr2WNs2zzN-Ec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

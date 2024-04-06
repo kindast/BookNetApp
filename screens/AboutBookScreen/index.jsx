@@ -59,27 +59,31 @@ export default function AboutBookScreen({ route }) {
             textAlign: "justify",
           }}
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis
-          tempore at enim officia, ipsam obcaecati nobis hic eligendi tempora
-          laborum voluptates natus quos asperiores quisquam unde sequi sit
-          excepturi? Tempora! Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Corporis tempore at enim officia, ipsam obcaecati nobis hic
-          eligendi tempora laborum voluptates natus quos asperiores quisquam
-          unde sequi sit excepturi? Tempora!
+          {book.description}
         </Text>
         <View
           style={{
             height: 1,
             backgroundColor: isDarkMode ? "#34363c" : "rgba(0,0,0,0.1)",
-            marginBottom: 20,
+            marginVertical: 20,
           }}
         />
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 20,
+          }}
+        >
           <View style={{ gap: 20 }}>
             <Param title={"Language"} value={"English"} />
-            <Param title={"Author"} value={"Orwell"} selectValue />
+            <Param
+              title={"Author"}
+              value={book.author.firstName + " " + book.author.lastName}
+              selectValue
+            />
             <Param title={"Published on"} value={"Dec 8, 2015"} />
-            <Param title={"Pages"} value={"339"} />
+            <Param title={"Pages"} value={book.pages} />
             <Param title={"Purchases"} value={"1K"} />
           </View>
           <View style={{ gap: 20 }}>
@@ -92,14 +96,14 @@ export default function AboutBookScreen({ route }) {
                 let value = "";
                 book.genres.forEach((genre) => {
                   if (book.genres.lastIndexOf(genre) !== book.genres.length - 1)
-                    value += `${genre}, `;
-                  else value += `${genre}`;
+                    value += `${genre.name}, `;
+                  else value += `${genre.name}`;
                 });
                 return value;
               }}
               selectValue
             />
-            <Param title={"Size"} value={"5.6 MB"} />
+            <Param title={"Size"} value={book.size} />
           </View>
         </View>
       </ScrollView>

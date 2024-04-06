@@ -1,14 +1,22 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, FONT, SIZES, icons } from "../../constants";
+import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 import Input from "../../components/controls/Input";
 import Button from "../../components/controls/Button";
 import GoogleButton from "../../components/controls/GoogleButton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUser } from "../../redux/slices/authSlice";
 
 export default function SignInScreen() {
   const navigation = useNavigation();
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   return (
     <View
@@ -48,20 +56,37 @@ export default function SignInScreen() {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Please enter your phone & password to sign in.
+          Please enter your email & password to sign in.
         </Text>
         <Input
           style={{ marginTop: 32 }}
-          label="Phone"
-          keyboardType="phone-pad"
-          placeholder="Phone"
+          label="Email"
+          keyboardType="default"
+          placeholder="Email"
+          maxLength={30}
+          value={email}
+          onChangeText={setEmail}
         />
         <Input
           style={{ marginTop: 24 }}
           label="Password"
           keyboardType="default"
           placeholder="Password"
+          maxLength={25}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
         />
+        <Text
+          style={{
+            fontFamily: FONT.regular,
+            fontSize: 16,
+            color: "#ff628c",
+            marginTop: 10,
+          }}
+        >
+          {error}
+        </Text>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("forgotpassword");
@@ -105,7 +130,33 @@ export default function SignInScreen() {
           title="Sign In"
           showShadow={true}
           onPress={() => {
-            navigation.replace("tabs");
+            axios
+              .get(api + "/api/signin", {
+                params: { email, password },
+              })
+              .then(async (response) => {
+                let data = response.data;
+                await AsyncStorage.setItem("user", JSON.stringify(data));
+                dispatch(setUser(data));
+              })
+              .catch((error) => {
+                if (error.response.status === 400) {
+                  if (!email || !password) {
+                    setError("Please enter email & password");
+                  } else {
+                    setError("Wrong email or password");
+                  }
+                }
+                if (error.response.status === 301) {
+                  axios.get(api + "/api/send-verification-code", {
+                    params: { email },
+                  });
+                  navigation.navigate("OTPCode", {
+                    email,
+                    verifyAccount: true,
+                  });
+                }
+              });
           }}
         />
       </View>
