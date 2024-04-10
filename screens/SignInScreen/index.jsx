@@ -140,6 +140,7 @@ export default function SignInScreen() {
                 dispatch(setUser(data));
               })
               .catch((error) => {
+                alert(error);
                 if (error.response.status === 400) {
                   if (!email || !password) {
                     setError("Please enter email & password");
