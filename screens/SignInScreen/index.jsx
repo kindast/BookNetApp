@@ -9,6 +9,7 @@ import { useState } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUser } from "../../redux/slices/authSlice";
+import Toast from "react-native-toast-message";
 
 export default function SignInScreen() {
   const navigation = useNavigation();
@@ -141,6 +142,7 @@ export default function SignInScreen() {
               })
               .catch((error) => {
                 alert(error);
+                Toast.show({ text1: error.message });
                 if (error.response.status === 400) {
                   if (!email || !password) {
                     setError("Please enter email & password");
