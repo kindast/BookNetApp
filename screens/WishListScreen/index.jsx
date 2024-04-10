@@ -6,17 +6,44 @@ import {
   View,
   FlatList,
   RefreshControl,
+  ActivityIndicator,
+  ScrollView,
 } from "react-native";
-import { COLORS, FONT, SIZES, icons } from "../../constants";
+import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useSelector } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
-import useFetch from "../../hooks/useFetch";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import WishListBookCard from "../../components/cards/WishListBookCard";
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 
 export default function WishListScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const user = useSelector((state) => state.auth.user);
   const navigation = useNavigation();
-  const { data, isLoading, refetch } = useFetch("books");
+  const [books, setBooks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchMyBooks = () => {
+    setIsLoading(true);
+    axios
+      .get(api + "/api/my-wishlist", {
+        headers: { Authorization: "Bearer " + user.token },
+      })
+      .then((response) => {
+        setBooks(response.data);
+      })
+      .catch((error) => {
+        setBooks([]);
+      });
+    setIsLoading(false);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMyBooks();
+    }, [])
+  );
+
   return (
     <View
       style={{
@@ -50,30 +77,45 @@ export default function WishListScreen() {
           />
         </TouchableOpacity>
       </View>
-      <View style={{ marginTop: 15 }}>
-        <FlatList
-          refreshControl={
-            <RefreshControl
-              onRefresh={() => {
-                refetch();
+      <View style={{ marginTop: 15, flex: 1 }}>
+        {isLoading ? (
+          <View
+            style={{ alignItems: "center", justifyContent: "center", flex: 1 }}
+          >
+            <ActivityIndicator color={COLORS.primary} size="large" />
+          </View>
+        ) : books.length === 0 ? (
+          <View
+            style={{ alignItems: "center", justifyContent: "center", flex: 1 }}
+          >
+            <Text
+              style={{
+                color: isDarkMode ? COLORS.white : COLORS.black,
+                fontFamily: FONT.regular,
+                fontSize: 16,
               }}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-          data={data}
-          renderItem={({ item }) => (
-            <WishListBookCard
-              title={item.title}
-              rating={item.rating}
-              image={item.image}
-              price={item.price}
-              onPress={() => {
-                navigation.navigate("bookdetails", { id: item.id });
-              }}
-              style={{ marginBottom: 15 }}
-            />
-          )}
-        />
+            >
+              No books added to wishlist
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={books}
+            renderItem={({ item }) => (
+              <WishListBookCard
+                title={item.title}
+                rating={item.rating}
+                image={api + item.coverUrl}
+                price={item.price}
+                onPress={() => {
+                  navigation.navigate("bookdetails", { id: item.id });
+                }}
+                style={{ marginBottom: 15 }}
+              />
+            )}
+          />
+        )}
       </View>
     </View>
   );

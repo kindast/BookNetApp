@@ -12,21 +12,49 @@ import {
 import { useSelector } from "react-redux";
 import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useEffect, useState } from "react";
-import useFetch from "../../hooks/useFetch";
 import Button from "../../components/controls/Button";
 import DetailsButton from "../../components/controls/DetailsButton";
 import ProgressBar from "react-native-progress/Bar";
+import axios from "axios";
+import Toast from "react-native-toast-message";
 
 export default function BookDetailsScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const user = useSelector((state) => state.auth.user);
   const navigation = useNavigation();
   const [rateStars, setRateStars] = useState(0);
   const { id } = route.params;
-  const { data, isLoading, refetch } = useFetch("book", { id: id });
+  const [book, setBook] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const updateWishlist = (isInWishlist) => {
+    setBook((prevState) => ({
+      ...prevState,
+      isInWishlist: isInWishlist,
+    }));
+  };
+
+  const fetchBook = () => {
+    setIsLoading(true);
+    axios
+      .get(api + "/api/book", {
+        params: { id },
+        headers: { Authorization: "Bearer " + user.token },
+      })
+      .then((response) => {
+        setBook(response.data);
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchBook();
+  }, []);
+
   const countReviews = (stars) => {
     let procent =
-      data?.reviews?.filter((review) => review.stars === stars).length /
-      data?.reviews?.length;
+      book?.reviews?.filter((review) => review.stars === stars).length /
+      book?.reviews?.length;
     return procent ? procent : 0;
   };
   return isLoading ? (
@@ -56,7 +84,7 @@ export default function BookDetailsScreen({ route }) {
         refreshControl={
           <RefreshControl
             onRefresh={() => {
-              refetch();
+              fetchBook();
             }}
           />
         }
@@ -72,17 +100,54 @@ export default function BookDetailsScreen({ route }) {
               style={{ width: 25, height: 25 }}
             />
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Image
-              source={isDarkMode ? icons.addLight : icons.add}
-              style={{ width: 30, height: 30, resizeMode: "contain" }}
-            />
-          </TouchableOpacity>
+          {!book.isPurchased && (
+            <TouchableOpacity
+              onPress={() => {
+                axios
+                  .get(api + "/api/wishlist-book", {
+                    params: { id: book.id },
+                    headers: { Authorization: "Bearer " + user.token },
+                  })
+                  .then((response) => {
+                    updateWishlist(!book.isInWishlist);
+                    if (!book.isInWishlist) {
+                      Toast.show({
+                        text1: "Success",
+                        text2: "Book added to wishlist",
+                        position: "bottom",
+                        type: "success",
+                        hideAfter: 100,
+                      });
+                    } else {
+                      Toast.show({
+                        text1: "Success",
+                        text2: "Book deleted from wishlist",
+                        position: "bottom",
+                        type: "success",
+                        hideAfter: 100,
+                      });
+                    }
+                  });
+              }}
+            >
+              {book.isInWishlist ? (
+                <Image
+                  source={icons.wishlistFill}
+                  style={{ width: 30, height: 30, resizeMode: "contain" }}
+                />
+              ) : (
+                <Image
+                  source={isDarkMode ? icons.addLight : icons.add}
+                  style={{ width: 30, height: 30, resizeMode: "contain" }}
+                />
+              )}
+            </TouchableOpacity>
+          )}
         </View>
         <View style={{ marginTop: 35, flexDirection: "row" }}>
           <Image
             source={{
-              uri: api + data?.coverUrl,
+              uri: api + book?.coverUrl,
             }}
             style={{
               height: 230,
@@ -101,7 +166,7 @@ export default function BookDetailsScreen({ route }) {
                 maxHeight: 100,
               }}
             >
-              {data?.title}
+              {book?.title}
             </Text>
             <Text
               adjustsFontSizeToFit
@@ -113,7 +178,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 15,
               }}
             >
-              {data?.author?.firstName + " " + data?.author?.lastName}
+              {book?.author?.firstName + " " + book?.author?.lastName}
             </Text>
             <Text
               adjustsFontSizeToFit
@@ -125,7 +190,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 15,
               }}
             >
-              Released on {data?.releaseDate}
+              Released on {book?.releaseDate}
             </Text>
             <View
               style={{
@@ -135,7 +200,7 @@ export default function BookDetailsScreen({ route }) {
                 gap: 8,
               }}
             >
-              {data?.genres?.map((genre, index) => (
+              {book?.genres?.map((genre, index) => (
                 <View
                   key={index}
                   style={{
@@ -183,7 +248,7 @@ export default function BookDetailsScreen({ route }) {
                   color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
                 }}
               >
-                {data?.rating}
+                {book?.rating}
               </Text>
               <Image
                 source={isDarkMode ? icons.starLight : icons.star}
@@ -203,7 +268,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 6,
               }}
             >
-              {data?.reviews?.length} reviews
+              {book?.reviews?.length} reviews
             </Text>
           </View>
           <View
@@ -225,7 +290,7 @@ export default function BookDetailsScreen({ route }) {
                 color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
               }}
             >
-              {data?.size}
+              {book?.size}
             </Text>
             <Text
               style={{
@@ -257,7 +322,7 @@ export default function BookDetailsScreen({ route }) {
                 color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
               }}
             >
-              {data?.pages}
+              {book?.pages}
             </Text>
             <Text
               style={{
@@ -303,17 +368,45 @@ export default function BookDetailsScreen({ route }) {
             </Text>
           </View>
         </View>
-        <Button
-          title={"Buy " + data?.price + "₽"}
-          style={{ marginTop: 25 }}
-          onPress={() => {
-            navigation.navigate("bookreader");
-          }}
-        />
+        {!book.isPurchased ? (
+          <Button
+            title={"Buy " + book?.price + "₽"}
+            style={{ marginTop: 25 }}
+            onPress={() => {
+              axios
+                .get(api + "/api/buy-book", {
+                  params: { id: book.id },
+                  headers: { Authorization: "Bearer " + user.token },
+                })
+                .then((response) => {
+                  setBook((prevState) => ({
+                    ...prevState,
+                    isPurchased: true,
+                  }));
+                  Toast.show({
+                    type: "success",
+                    text1: "Success",
+                    text2: "Book added to your account",
+                    position: "bottom",
+                    hideAfter: 100,
+                  });
+                })
+                .catch((error) => {});
+            }}
+          />
+        ) : (
+          <Button
+            title={"Read EBook"}
+            style={{ marginTop: 25 }}
+            onPress={() => {
+              navigation.navigate("bookreader", { book: book });
+            }}
+          />
+        )}
         <DetailsButton
           title={"About this Book"}
           onPress={() => {
-            navigation.navigate("aboutbook", { book: data });
+            navigation.navigate("aboutbook", { book: book });
           }}
           style={{ marginTop: 25 }}
         />
@@ -327,12 +420,12 @@ export default function BookDetailsScreen({ route }) {
             marginTop: 25,
           }}
         >
-          {data?.description}
+          {book?.description}
         </Text>
         <DetailsButton
           title={"Ratings & Reviews"}
           onPress={() => {
-            navigation.navigate("reviews", { book: data });
+            navigation.navigate("reviews", { book: book });
           }}
           style={{ marginTop: 30 }}
         />
@@ -352,14 +445,14 @@ export default function BookDetailsScreen({ route }) {
                 color: isDarkMode ? COLORS.white : COLORS.black,
               }}
             >
-              {data?.rating}
+              {book?.rating}
             </Text>
             <View style={{ flexDirection: "row", gap: 10 }}>
               <Image
                 source={
-                  data?.rating >= 1
+                  book?.rating >= 1
                     ? icons.fullstar
-                    : data?.rating >= 0.5 && data?.rating < 1
+                    : book?.rating >= 0.5 && book?.rating < 1
                     ? isDarkMode
                       ? icons.halfstar
                       : icons.halfstarLight
@@ -371,9 +464,9 @@ export default function BookDetailsScreen({ route }) {
               />
               <Image
                 source={
-                  data?.rating >= 2
+                  book?.rating >= 2
                     ? icons.fullstar
-                    : data?.rating >= 1.5 && data?.rating < 2
+                    : book?.rating >= 1.5 && book?.rating < 2
                     ? isDarkMode
                       ? icons.halfstar
                       : icons.halfstarLight
@@ -385,9 +478,9 @@ export default function BookDetailsScreen({ route }) {
               />
               <Image
                 source={
-                  data?.rating >= 3
+                  book?.rating >= 3
                     ? icons.fullstar
-                    : data?.rating >= 2.5 && data?.rating < 3
+                    : book?.rating >= 2.5 && book?.rating < 3
                     ? isDarkMode
                       ? icons.halfstar
                       : icons.halfstarLight
@@ -399,9 +492,9 @@ export default function BookDetailsScreen({ route }) {
               />
               <Image
                 source={
-                  data?.rating >= 4
+                  book?.rating >= 4
                     ? icons.fullstar
-                    : data?.rating >= 3.5 && data?.rating < 4
+                    : book?.rating >= 3.5 && book?.rating < 4
                     ? isDarkMode
                       ? icons.halfstar
                       : icons.halfstarLight
@@ -413,9 +506,9 @@ export default function BookDetailsScreen({ route }) {
               />
               <Image
                 source={
-                  data?.rating === 5
+                  book?.rating === 5
                     ? icons.fullstar
-                    : data?.rating >= 4.5 && data?.rating < 5
+                    : book?.rating >= 4.5 && book?.rating < 5
                     ? isDarkMode
                       ? icons.halfstar
                       : icons.halfstarLight
@@ -433,7 +526,7 @@ export default function BookDetailsScreen({ route }) {
                 color: isDarkMode ? COLORS.white : COLORS.black,
               }}
             >
-              ({data?.reviews?.length} reviews)
+              ({book?.reviews?.length} reviews)
             </Text>
           </View>
           <View
@@ -664,7 +757,11 @@ export default function BookDetailsScreen({ route }) {
               />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("writereview", { book, stars: rateStars });
+            }}
+          >
             <View
               style={{
                 marginTop: 15,

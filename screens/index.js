@@ -15,6 +15,7 @@ import AboutBookScreen from "./AboutBookScreen";
 import ReviewsScreen from "./ReviewsScreen";
 import LibraryScreen from "./LibraryScreen";
 import AccountScreen from "./AccountScreen";
+import WriteReviewScreen from "./WriteReviewScreen";
 
 export {
   BookDetailsScreen,
@@ -34,4 +35,5 @@ export {
   ReviewsScreen,
   LibraryScreen,
   AccountScreen,
+  WriteReviewScreen,
 };

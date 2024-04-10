@@ -13,14 +13,32 @@ import { useSelector } from "react-redux";
 import BookCard from "../../components/cards/BookCard";
 import GenreCard from "../../components/cards/GenreCard";
 import { useNavigation } from "@react-navigation/native";
-import useFetch from "../../hooks/useFetch";
 import { useEffect, useState } from "react";
 import DetailsButton from "../../components/controls/DetailsButton";
+import axios from "axios";
 
 export default function HomeScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const user = useSelector((state) => state.auth.user);
   const navigation = useNavigation();
-  const { data, isLoading, refetch } = useFetch("books");
+  const [books, setBooks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchBooks = () => {
+    setIsLoading(true);
+    axios
+      .get(api + "/api/books", {
+        headers: { Authorization: "Bearer " + user.token },
+      })
+      .then((response) => {
+        setBooks(response.data);
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
 
   const genres = [
     {
@@ -119,19 +137,21 @@ export default function HomeScreen() {
       </View>
       <View style={{ marginTop: 35, flexDirection: "row" }}>
         {isLoading ? (
-          <ActivityIndicator />
+          <View style={{ alignItems: "center", justifyContent: "center" }}>
+            <ActivityIndicator color={COLORS.primary} size="large" />
+          </View>
         ) : (
           <FlatList
             refreshControl={
               <RefreshControl
                 onRefresh={() => {
-                  refetch();
+                  fetchBooks();
                 }}
               />
             }
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={data}
+            data={books}
             renderItem={({ item }) => (
               <BookCard
                 title={item.title}
@@ -141,7 +161,7 @@ export default function HomeScreen() {
                 onPress={() => {
                   navigation.navigate("bookdetails", { id: item.id });
                 }}
-                style={{ marginBottom: 12 }}
+                style={{ marginLeft: 12 }}
               />
             )}
           />

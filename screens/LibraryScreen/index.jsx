@@ -1,19 +1,17 @@
 import {
-  Image,
   StyleSheet,
+  Image,
   Text,
   TouchableOpacity,
   View,
   FlatList,
-  RefreshControl,
   ActivityIndicator,
 } from "react-native";
 import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useSelector } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
-import useFetch from "../../hooks/useFetch";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import WishListBookCard from "../../components/cards/WishListBookCard";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 export default function LibraryScreen() {
@@ -26,16 +24,20 @@ export default function LibraryScreen() {
   const fetchMyBooks = () => {
     setIsLoading(true);
     axios
-      .get(api + "/api/my-books", { params: { token: user.token } })
+      .get(api + "/api/my-books", {
+        headers: { Authorization: "Bearer " + user.token },
+      })
       .then((response) => {
         setBooks(response.data);
       });
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    fetchMyBooks();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchMyBooks();
+    }, [])
+  );
 
   return (
     <View
@@ -60,7 +62,7 @@ export default function LibraryScreen() {
               marginLeft: 15,
             }}
           >
-            My library
+            Purchased
           </Text>
         </View>
         <TouchableOpacity>
@@ -70,30 +72,36 @@ export default function LibraryScreen() {
           />
         </TouchableOpacity>
       </View>
-      <View style={{ flex: 1 }}>
+      <View style={{ marginTop: 15, flex: 1 }}>
         {isLoading ? (
           <View
             style={{ alignItems: "center", justifyContent: "center", flex: 1 }}
           >
-            <ActivityIndicator size="large" color={COLORS.primary} />
+            <ActivityIndicator color={COLORS.primary} size="large" />
+          </View>
+        ) : books.length === 0 ? (
+          <View
+            style={{ alignItems: "center", justifyContent: "center", flex: 1 }}
+          >
+            <Text
+              style={{
+                color: isDarkMode ? COLORS.white : COLORS.black,
+                fontFamily: FONT.regular,
+                fontSize: 16,
+              }}
+            >
+              No purchased books yet
+            </Text>
           </View>
         ) : (
           <FlatList
-            style={{ marginTop: 15 }}
-            refreshControl={
-              <RefreshControl
-                onRefresh={() => {
-                  fetchMyBooks();
-                }}
-              />
-            }
             showsVerticalScrollIndicator={false}
             data={books}
             renderItem={({ item }) => (
               <WishListBookCard
                 title={item.title}
                 rating={item.rating}
-                image={api + item.image}
+                image={api + item.coverUrl}
                 price={item.price}
                 onPress={() => {
                   navigation.navigate("bookdetails", { id: item.id });

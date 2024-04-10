@@ -18,11 +18,14 @@ import {
   CreateNewPasswordScreen,
   AboutBookScreen,
   ReviewsScreen,
+  WriteReviewScreen,
 } from "./screens";
 import { setIsDarkMode } from "./redux/slices/settingsSlice";
-import { setToken, setName, setEmail, setUser } from "./redux/slices/authSlice";
+import { setUser } from "./redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import { MenuProvider } from "react-native-popup-menu";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,42 +48,52 @@ export default function App() {
     setIsLoading(false);
   }, []);
   return (
-    <NavigationContainer>
-      <StatusBar style="auto" />
-      {isLoading ? (
-        <SplashScreen />
-      ) : (
-        <Stack.Navigator
-          initialRouteName="splash"
-          screenOptions={{ headerShown: false }}
-        >
-          {!user ? (
-            <>
-              <Stack.Screen name="welcome" component={WelcomeScreen} />
-              <Stack.Screen name="signup" component={SignUpScreen} />
-              <Stack.Screen name="signin" component={SignInScreen} />
-              <Stack.Screen
-                name="forgotpassword"
-                component={ForgotPasswordScreen}
-              />
-              <Stack.Screen name="OTPCode" component={OTPCodeScreen} />
-              <Stack.Screen
-                name="createnewpassword"
-                component={CreateNewPasswordScreen}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen name="tabs" component={BottomNavigationScreen} />
-              <Stack.Screen name="genres" component={GenresScreen} />
-              <Stack.Screen name="bookdetails" component={BookDetailsScreen} />
-              <Stack.Screen name="aboutbook" component={AboutBookScreen} />
-              <Stack.Screen name="bookreader" component={BookReaderScreen} />
-              <Stack.Screen name="reviews" component={ReviewsScreen} />
-            </>
-          )}
-        </Stack.Navigator>
-      )}
-    </NavigationContainer>
+    <MenuProvider>
+      <NavigationContainer>
+        <StatusBar style={theme === "dark" ? "light" : "dark"} />
+        {isLoading ? (
+          <SplashScreen />
+        ) : (
+          <Stack.Navigator
+            initialRouteName="splash"
+            screenOptions={{ headerShown: false }}
+          >
+            {!user ? (
+              <>
+                <Stack.Screen name="welcome" component={WelcomeScreen} />
+                <Stack.Screen name="signup" component={SignUpScreen} />
+                <Stack.Screen name="signin" component={SignInScreen} />
+                <Stack.Screen
+                  name="forgotpassword"
+                  component={ForgotPasswordScreen}
+                />
+                <Stack.Screen name="OTPCode" component={OTPCodeScreen} />
+                <Stack.Screen
+                  name="createnewpassword"
+                  component={CreateNewPasswordScreen}
+                />
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="tabs" component={BottomNavigationScreen} />
+                <Stack.Screen name="genres" component={GenresScreen} />
+                <Stack.Screen
+                  name="bookdetails"
+                  component={BookDetailsScreen}
+                />
+                <Stack.Screen name="aboutbook" component={AboutBookScreen} />
+                <Stack.Screen name="bookreader" component={BookReaderScreen} />
+                <Stack.Screen name="reviews" component={ReviewsScreen} />
+                <Stack.Screen
+                  name="writereview"
+                  component={WriteReviewScreen}
+                />
+              </>
+            )}
+          </Stack.Navigator>
+        )}
+        <Toast />
+      </NavigationContainer>
+    </MenuProvider>
   );
 }

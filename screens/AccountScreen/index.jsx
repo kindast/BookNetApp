@@ -10,7 +10,6 @@ import {
 import { COLORS, FONT, SIZES, icons } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import useFetch from "../../hooks/useFetch";
 import WishListBookCard from "../../components/cards/WishListBookCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUser } from "../../redux/slices/authSlice";

@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Reader, useReader } from "@epubjs-react-native/core";
-import base64 from "./base64";
 import { useFileSystem } from "@epubjs-react-native/expo-file-system";
 import {
   Alert,
@@ -10,23 +9,25 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
   useWindowDimensions,
   View,
   PanResponder,
   DrawerLayoutAndroid,
 } from "react-native";
-import Button from "../../components/controls/Button";
-import { COLORS, FONT, SIZES, icons } from "../../constants";
-import { useEffect } from "react/cjs/react.production.min";
+import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
-export default function BookReaderScreen() {
+export default function BookReaderScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const user = useSelector((state) => state.auth.user);
   const navigation = useNavigation();
-  const { width, height } = useWindowDimensions();
+  const { book } = route.params;
+  const [bookFile, setBookFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const drawer = React.useRef(null);
-  const [locations, setLocations] = React.useState(null);
   const {
     goNext,
     goPrevious,
@@ -48,6 +49,25 @@ export default function BookReaderScreen() {
       },
     })
   ).current;
+
+  const downloadBook = () => {
+    setIsLoading(true);
+    axios
+      .get(api + "/api/download-book", {
+        params: { id: book.id },
+        headers: { Authorization: "Bearer " + user.token },
+      })
+      .then((response) => {
+        setBookFile(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  };
+  useEffect(() => {
+    downloadBook();
+  }, []);
 
   return (
     <DrawerLayoutAndroid
@@ -80,6 +100,7 @@ export default function BookReaderScreen() {
               />
             </TouchableOpacity>
             <Text
+              adjustsFontSizeToFit
               style={{
                 fontFamily: FONT.bold,
                 color: isDarkMode ? COLORS.white : COLORS.black,
@@ -87,7 +108,7 @@ export default function BookReaderScreen() {
                 marginLeft: 20,
               }}
             >
-              1984
+              {book.title}
             </Text>
           </View>
           <TouchableOpacity onPress={() => {}}>
@@ -97,16 +118,24 @@ export default function BookReaderScreen() {
             />
           </TouchableOpacity>
         </View>
-        <Reader
-          src={base64}
-          fileSystem={useFileSystem}
-          enableSelection={true}
-          highlightOnSelect={false}
-          allowScriptedContent={true}
-          onLocationsReady={() => {
-            setLocations(getLocations());
-          }}
-        />
+        {isLoading ? (
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          </View>
+        ) : (
+          <Reader
+            src={bookFile}
+            fileSystem={useFileSystem}
+            enableSelection={false}
+            highlightOnSelect={false}
+            allowScriptedContent={true}
+          />
+        )}
       </View>
     </DrawerLayoutAndroid>
   );

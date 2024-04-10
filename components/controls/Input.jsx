@@ -18,6 +18,7 @@ export default function Input({
   onChangeText,
   style,
   secureTextEntry,
+  multiline,
   maxLength,
   validation = () => {},
 }) {
@@ -39,6 +40,7 @@ export default function Input({
       </Text>
       <View>
         <TextInput
+          multiline={multiline}
           maxLength={maxLength}
           secureTextEntry={secureTextEntry && isInvisible}
           style={{

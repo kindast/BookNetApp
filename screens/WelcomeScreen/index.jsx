@@ -6,45 +6,10 @@ import Button from "../../components/controls/Button";
 import AccentButton from "../../components/controls/AccentButton";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
-import {
-  GoogleOneTapSignIn,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
 
 export default function WelcomeScreen() {
   const nagigation = useNavigation();
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
-
-  const signInGoogle = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleOneTapSignIn.signIn({
-        nonce: "your_nonce",
-      });
-      setState({ userInfo });
-    } catch (error) {
-      if (isErrorWithCode(error)) {
-        switch (error.code) {
-          case statusCodes.NO_SAVED_CREDENTIAL_FOUND:
-            // no saved credential found, try creating an account
-            break;
-          case statusCodes.SIGN_IN_CANCELLED:
-            // sign in was cancelled
-            break;
-          case statusCodes.ONE_TAP_START_FAILED:
-            // Android and Web only, you probably have hit rate limiting. You can still call the original Google Sign In API in this case.
-            break;
-          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            // Android-only: play services not available or outdated
-            break;
-          default:
-          // something else happened
-        }
-      } else {
-        // an error that's not related to google sign in occurred
-      }
-    }
-  };
 
   return (
     <View
@@ -97,12 +62,7 @@ export default function WelcomeScreen() {
         >
           The Number One Best Ebook Store & Reader Application in this Century
         </Text>
-        <GoogleButton
-          style={{ marginTop: 32 }}
-          onPress={() => {
-            signInGoogle();
-          }}
-        />
+        <GoogleButton style={{ marginTop: 32 }} onPress={() => {}} />
         <Button
           title="Get Started"
           style={{ marginTop: 16 }}

@@ -88,8 +88,12 @@ export default function AboutBookScreen({ route }) {
           </View>
           <View style={{ gap: 20 }}>
             <Param title={"Age"} value={"Ages 20 & Up"} />
-            <Param title={"Publisher"} value={"Moscow"} selectValue />
-            <Param title={"ISBN"} value={"5623545895478"} />
+            <Param
+              title={"Publisher"}
+              value={book.publisher.name}
+              selectValue
+            />
+            <Param title={"ISBN"} value={book.isbn} />
             <Param
               title={"Genres"}
               value={() => {

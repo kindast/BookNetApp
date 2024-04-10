@@ -1,7 +1,19 @@
-import { Image, Text, TouchableOpacity, View, Platform } from "react-native";
+import {
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { COLORS, FONT, icons } from "../../constants";
 import { useSelector } from "react-redux";
 import { useState } from "react";
+import {
+  Menu,
+  MenuTrigger,
+  MenuOption,
+  MenuOptions,
+} from "react-native-popup-menu";
 
 export default function WishListBookCard({
   title,
@@ -83,105 +95,97 @@ export default function WishListBookCard({
             </Text>
           </View>
         </View>
-        <TouchableOpacity
-          style={{ justifyContent: "center" }}
-          onPress={() => setModalVisible(true)}
-        >
-          <View style={{ gap: 2, padding: 20, paddingRight: 0 }}>
-            <View
-              style={{
-                width: 4,
-                height: 4,
-                borderRadius: 100,
-                backgroundColor: isDarkMode ? COLORS.white : COLORS.black,
-              }}
-            />
-            <View
-              style={{
-                width: 4,
-                height: 4,
-                borderRadius: 100,
-                backgroundColor: isDarkMode ? COLORS.white : COLORS.black,
-              }}
-            />
-            <View
-              style={{
-                width: 4,
-                height: 4,
-                borderRadius: 100,
-                backgroundColor: isDarkMode ? COLORS.white : COLORS.black,
-              }}
-            />
-          </View>
-        </TouchableOpacity>
-        <View
+        <Menu
           style={{
-            backgroundColor: isDarkMode
-              ? COLORS.darkBackground
-              : COLORS.lightBackground,
-            elevation: 2,
-            borderRadius: 20,
-            width: 200,
-            position: "absolute",
-            right: 5,
-            top: 37,
-            zIndex: 10,
-            paddingHorizontal: 20,
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <TouchableOpacity>
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 15,
-                paddingVertical: 15,
-              }}
-            >
-              <Image
-                source={isDarkMode ? icons.documentLight : icons.document}
-                style={{ width: 18, height: 18, resizeMode: "contain" }}
-              />
-              <Text
+          <MenuTrigger>
+            <View style={{ gap: 2, padding: 20, paddingRight: 0 }}>
+              <View
                 style={{
-                  fontSize: 13,
-                  fontFamily: FONT.regular,
-                  color: isDarkMode ? COLORS.white : COLORS.black,
+                  width: 4,
+                  height: 4,
+                  borderRadius: 100,
+                  backgroundColor: isDarkMode ? COLORS.white : COLORS.black,
+                }}
+              />
+              <View
+                style={{
+                  width: 4,
+                  height: 4,
+                  borderRadius: 100,
+                  backgroundColor: isDarkMode ? COLORS.white : COLORS.black,
+                }}
+              />
+              <View
+                style={{
+                  width: 4,
+                  height: 4,
+                  borderRadius: 100,
+                  backgroundColor: isDarkMode ? COLORS.white : COLORS.black,
+                }}
+              />
+            </View>
+          </MenuTrigger>
+          <MenuOptions
+            optionsContainerStyle={{ borderRadius: 20, paddingHorizontal: 20 }}
+          >
+            <MenuOption>
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 15,
+                  paddingVertical: 15,
                 }}
               >
-                Remove from Wishlist
-              </Text>
-            </View>
-          </TouchableOpacity>
-          <View
-            style={{
-              height: 1,
-              backgroundColor: isDarkMode ? "#34363c" : "#efedef",
-            }}
-          />
-          <TouchableOpacity>
+                <Image
+                  source={isDarkMode ? icons.documentLight : icons.document}
+                  style={{ width: 18, height: 18, resizeMode: "contain" }}
+                />
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontFamily: FONT.regular,
+                    color: isDarkMode ? COLORS.white : COLORS.black,
+                  }}
+                >
+                  Remove from Wishlist
+                </Text>
+              </View>
+            </MenuOption>
             <View
               style={{
-                flexDirection: "row",
-                gap: 15,
-                paddingVertical: 15,
+                height: 1,
+                backgroundColor: isDarkMode ? "#34363c" : "#efedef",
               }}
-            >
-              <Image
-                source={isDarkMode ? icons.infoLight : icons.info}
-                style={{ width: 18, height: 18, resizeMode: "contain" }}
-              />
-              <Text
+            />
+            <MenuOption>
+              <View
                 style={{
-                  fontSize: 13,
-                  fontFamily: FONT.regular,
-                  color: isDarkMode ? COLORS.white : COLORS.black,
+                  flexDirection: "row",
+                  gap: 15,
+                  paddingVertical: 15,
                 }}
               >
-                About Ebook
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+                <Image
+                  source={isDarkMode ? icons.infoLight : icons.info}
+                  style={{ width: 18, height: 18, resizeMode: "contain" }}
+                />
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontFamily: FONT.regular,
+                    color: isDarkMode ? COLORS.white : COLORS.black,
+                  }}
+                >
+                  About Ebook
+                </Text>
+              </View>
+            </MenuOption>
+          </MenuOptions>
+        </Menu>
       </View>
     </TouchableOpacity>
   );
