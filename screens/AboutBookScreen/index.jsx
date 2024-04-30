@@ -9,10 +9,21 @@ import {
 import { SIZES, FONT, COLORS, icons } from "../../constants";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function AboutBookScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   const navigation = useNavigation();
+
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
+
   const { book } = route.params;
   return (
     <View
@@ -43,7 +54,7 @@ export default function AboutBookScreen({ route }) {
               marginLeft: 20,
             }}
           >
-            About this Book
+            {i18n.t("ABSTitle")}
           </Text>
         </View>
       </View>
@@ -76,26 +87,26 @@ export default function AboutBookScreen({ route }) {
           }}
         >
           <View style={{ gap: 20 }}>
-            <Param title={"Language"} value={"English"} />
+            <Param title={i18n.t("ABSLanguage")} value={i18n.t("ABSRussian")} />
             <Param
-              title={"Author"}
+              title={i18n.t("ABSAuthor")}
               value={book.author.firstName + " " + book.author.lastName}
               selectValue
             />
-            <Param title={"Published on"} value={"Dec 8, 2015"} />
-            <Param title={"Pages"} value={book.pages} />
-            <Param title={"Purchases"} value={"1K"} />
+            <Param title={i18n.t("ABSPublishedOn")} value={book.formatDate} />
+            <Param title={i18n.t("ABSPages")} value={book.pages} />
+            <Param title={i18n.t("ABSPurchases")} value={"1K"} />
           </View>
           <View style={{ gap: 20 }}>
-            <Param title={"Age"} value={"Ages 20 & Up"} />
+            <Param title={i18n.t("ABSAge")} value={"12+"} />
             <Param
-              title={"Publisher"}
+              title={i18n.t("ABSPublisher")}
               value={book.publisher.name}
               selectValue
             />
             <Param title={"ISBN"} value={book.isbn} />
             <Param
-              title={"Genres"}
+              title={i18n.t("ABSGenres")}
               value={() => {
                 let value = "";
                 book.genres.forEach((genre) => {
@@ -107,7 +118,7 @@ export default function AboutBookScreen({ route }) {
               }}
               selectValue
             />
-            <Param title={"Size"} value={book.size} />
+            <Param title={i18n.t("ABSSize")} value={book.size} />
           </View>
         </View>
       </ScrollView>
@@ -121,7 +132,7 @@ const Param = ({ title, value, selectValue = false }) => {
     <View style={{ gap: 8 }}>
       <Text
         style={{
-          fontSize: 20,
+          fontSize: 18,
           fontFamily: FONT.bold,
           color: isDarkMode ? COLORS.white : COLORS.black,
         }}
@@ -130,7 +141,7 @@ const Param = ({ title, value, selectValue = false }) => {
       </Text>
       <Text
         style={{
-          fontSize: 18,
+          fontSize: 16,
           fontFamily: FONT.regular,
           color: selectValue
             ? COLORS.primary

@@ -1,19 +1,6 @@
-import {
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-} from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { COLORS, FONT, api, icons } from "../../constants";
 import { useSelector } from "react-redux";
-import { useState } from "react";
-import {
-  Menu,
-  MenuTrigger,
-  MenuOption,
-  MenuOptions,
-} from "react-native-popup-menu";
 
 export default function HorizontalBookCard({ book, onPress, style }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);

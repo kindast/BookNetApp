@@ -1,8 +1,9 @@
 import { View, Image, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { COLORS, FONT, SIZES, icons } from "../../constants";
-import React from "react";
+import React, { useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
+import { useFonts } from "expo-font";
 
 export default function SplashScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);

@@ -13,6 +13,9 @@ import Button from "../../components/controls/Button";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function CreateNewPasswordScreen({ route }) {
   const navigation = useNavigation();
@@ -22,6 +25,13 @@ export default function CreateNewPasswordScreen({ route }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(false);
   const { email, code } = route.params;
+
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
 
   useEffect(() => {
     const backAction = () => {
@@ -64,7 +74,7 @@ export default function CreateNewPasswordScreen({ route }) {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Create New Password 🔐
+          {i18n.t("CNPSTitle")}
         </Text>
         <Text
           style={{
@@ -74,14 +84,13 @@ export default function CreateNewPasswordScreen({ route }) {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Enter your new password. If you forget it, then you have to do forgot
-          password.
+          {i18n.t("CNPSSubtitle")}
         </Text>
         <Input
           style={{ marginTop: 32 }}
-          label="Password"
+          label={i18n.t("SUSPassword")}
           keyboardType="default"
-          placeholder="Password"
+          placeholder={i18n.t("SUSPassword")}
           maxLength={25}
           value={password}
           secureTextEntry
@@ -90,20 +99,20 @@ export default function CreateNewPasswordScreen({ route }) {
             let regex = /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/;
             if (password.trim().length === 0) {
               setIsPasswordValid(false);
-              return "Password is required";
+              return i18n.t("SUSPasswordRequired");
             }
             if (!regex.test(password)) {
               setIsPasswordValid(false);
-              return "The password must be a minimum of 6 characters, with at least 1 uppercase letter, 1 lowercase letter and 1 number, with no spaces";
+              return i18n.t("SUSPasswordInvalid");
             }
             setIsPasswordValid(true);
           }}
         />
         <Input
           style={{ marginTop: 16 }}
-          label="Confirm Password"
+          label={i18n.t("SUSConfirmPassword")}
           keyboardType="default"
-          placeholder="Confirm Password"
+          placeholder={i18n.t("SUSConfirmPassword")}
           maxLength={25}
           secureTextEntry
           value={confirmPassword}
@@ -111,7 +120,7 @@ export default function CreateNewPasswordScreen({ route }) {
           validation={() => {
             if (confirmPassword !== password) {
               setIsConfirmPasswordValid(false);
-              return "Passwords don't match";
+              return i18n.t("SUSConfirmPasswordInvalid");
             }
             setIsConfirmPasswordValid(true);
           }}
@@ -127,7 +136,7 @@ export default function CreateNewPasswordScreen({ route }) {
         }}
       >
         <Button
-          title="Continue"
+          title={i18n.t("FPSButton")}
           showShadow={true}
           onPress={() => {
             axios

@@ -6,6 +6,9 @@ import Button from "../../components/controls/Button";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import axios from "axios";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation();
@@ -13,6 +16,13 @@ export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [error, setError] = useState("");
+
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
 
   return (
     <View
@@ -42,7 +52,7 @@ export default function ForgotPasswordScreen() {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Forgot Password 🔑
+          {i18n.t("FPSTitle")}
         </Text>
         <Text
           style={{
@@ -52,14 +62,13 @@ export default function ForgotPasswordScreen() {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Enter your email address. We will send an OTP code for verification in
-          the next step.
+          {i18n.t("FPSSubtitle")}
         </Text>
         <Input
           style={{ marginTop: 32 }}
-          label="Email"
+          label={i18n.t("SUSEmail")}
           keyboardType="email-address"
-          placeholder="Email"
+          placeholder={i18n.t("SUSEmail")}
           maxLength={30}
           value={email}
           onChangeText={setEmail}
@@ -67,11 +76,11 @@ export default function ForgotPasswordScreen() {
             let regex = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
             if (email.trim().length === 0) {
               setIsEmailValid(false);
-              return "Email is required";
+              return i18n.t("SUSEmailRequired");
             }
             if (!regex.test(email)) {
               setIsEmailValid(false);
-              return "Email does not match format example@email.com";
+              return i18n.t("SUSEmailInvalid");
             }
             setIsEmailValid(true);
           }}
@@ -97,7 +106,7 @@ export default function ForgotPasswordScreen() {
         }}
       >
         <Button
-          title="Continue"
+          title={i18n.t("FPSButton")}
           showShadow={true}
           onPress={() => {
             if (isEmailValid) {
@@ -110,7 +119,14 @@ export default function ForgotPasswordScreen() {
                   });
                 })
                 .catch((error) => {
-                  setError(error.response.data.message);
+                  switch (error.response.data.error) {
+                    case 1:
+                      setError(i18n.t("FPSUserNotExist"));
+                      break;
+                    case 2:
+                      setError(i18n.t("FPSFailedSendEmail"));
+                      break;
+                  }
                 });
             }
           }}

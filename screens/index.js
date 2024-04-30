@@ -16,6 +16,8 @@ import ReviewsScreen from "./ReviewsScreen";
 import LibraryScreen from "./LibraryScreen";
 import AccountScreen from "./AccountScreen";
 import WriteReviewScreen from "./WriteReviewScreen";
+import SearchScreen from "./SearchScreen";
+import LanguageScreen from "./LanguageScreen";
 
 export {
   BookDetailsScreen,
@@ -36,4 +38,6 @@ export {
   LibraryScreen,
   AccountScreen,
   WriteReviewScreen,
+  SearchScreen,
+  LanguageScreen,
 };

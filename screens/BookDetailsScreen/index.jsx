@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {
   StyleSheet,
   View,
@@ -11,12 +11,16 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { COLORS, FONT, SIZES, api, icons } from "../../constants";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Button from "../../components/controls/Button";
 import DetailsButton from "../../components/controls/DetailsButton";
 import ProgressBar from "react-native-progress/Bar";
 import axios from "axios";
 import Toast from "react-native-toast-message";
+import { Review } from "../ReviewsScreen";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function BookDetailsScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
@@ -26,7 +30,12 @@ export default function BookDetailsScreen({ route }) {
   const { id } = route.params;
   const [book, setBook] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   const updateWishlist = (isInWishlist) => {
     setBook((prevState) => ({
       ...prevState,
@@ -47,9 +56,11 @@ export default function BookDetailsScreen({ route }) {
       });
   };
 
-  useEffect(() => {
-    fetchBook();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchBook();
+    }, [])
+  );
 
   const countReviews = (stars) => {
     let procent =
@@ -112,16 +123,16 @@ export default function BookDetailsScreen({ route }) {
                     updateWishlist(!book.isInWishlist);
                     if (!book.isInWishlist) {
                       Toast.show({
-                        text1: "Success",
-                        text2: "Book added to wishlist",
+                        text1: i18n.t("BDSSuccess"),
+                        text2: i18n.t("BDSAddWishlist"),
                         position: "bottom",
                         type: "success",
                         hideAfter: 100,
                       });
                     } else {
                       Toast.show({
-                        text1: "Success",
-                        text2: "Book deleted from wishlist",
+                        text1: i18n.t("BDSSuccess"),
+                        text2: i18n.t("BDSRemoveWishlist"),
                         position: "bottom",
                         type: "success",
                         hideAfter: 100,
@@ -190,7 +201,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 15,
               }}
             >
-              Released on {book?.releaseDate}
+              {i18n.t("BDSReleased")} {book?.formatDate}
             </Text>
             <View
               style={{
@@ -268,7 +279,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 6,
               }}
             >
-              {book?.reviews?.length} reviews
+              {book?.reviews?.length} {i18n.t("BDSReviews")}
             </Text>
           </View>
           <View
@@ -300,7 +311,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 6,
               }}
             >
-              size
+              {i18n.t("BDSSize")}
             </Text>
           </View>
           <View
@@ -332,7 +343,7 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 6,
               }}
             >
-              pages
+              {i18n.t("BDSPages")}
             </Text>
           </View>
           <View
@@ -364,13 +375,13 @@ export default function BookDetailsScreen({ route }) {
                 marginTop: 6,
               }}
             >
-              purchases
+              {i18n.t("BDSPurchases")}
             </Text>
           </View>
         </View>
         {!book.isPurchased ? (
           <Button
-            title={"Buy " + book?.price + "₽"}
+            title={i18n.t("BDSBuy") + " " + book?.price + "₽"}
             style={{ marginTop: 25 }}
             onPress={() => {
               axios
@@ -385,8 +396,8 @@ export default function BookDetailsScreen({ route }) {
                   }));
                   Toast.show({
                     type: "success",
-                    text1: "Success",
-                    text2: "Book added to your account",
+                    text1: i18n.t("BDSSuccess"),
+                    text2: i18n.t("BDSAddBookToAccount"),
                     position: "bottom",
                     hideAfter: 100,
                   });
@@ -396,7 +407,7 @@ export default function BookDetailsScreen({ route }) {
           />
         ) : (
           <Button
-            title={"Read EBook"}
+            title={i18n.t("BDSRead")}
             style={{ marginTop: 25 }}
             onPress={() => {
               navigation.navigate("bookreader", { book: book });
@@ -404,7 +415,7 @@ export default function BookDetailsScreen({ route }) {
           />
         )}
         <DetailsButton
-          title={"About this Book"}
+          title={i18n.t("BDSAboutThisBook")}
           onPress={() => {
             navigation.navigate("aboutbook", { book: book });
           }}
@@ -423,7 +434,7 @@ export default function BookDetailsScreen({ route }) {
           {book?.description}
         </Text>
         <DetailsButton
-          title={"Ratings & Reviews"}
+          title={i18n.t("BDSRatingsAndReviews")}
           onPress={() => {
             navigation.navigate("reviews", { book: book });
           }}
@@ -526,7 +537,7 @@ export default function BookDetailsScreen({ route }) {
                 color: isDarkMode ? COLORS.white : COLORS.black,
               }}
             >
-              ({book?.reviews?.length} reviews)
+              ({book?.reviews?.length} {i18n.t("BDSReviews")})
             </Text>
           </View>
           <View
@@ -665,126 +676,176 @@ export default function BookDetailsScreen({ route }) {
             marginVertical: 15,
           }}
         />
-        <View style={{ alignItems: "center" }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontFamily: FONT.bold,
-              color: isDarkMode ? COLORS.white : "#424242",
-            }}
-          >
-            Rate this book
-          </Text>
-          <View style={{ flexDirection: "row", gap: 20, marginTop: 15 }}>
+        {book.reviews.filter((r) => r.author.email === user.email).length >
+        0 ? (
+          <View style={{ marginBottom: 15 }}>
+            <Review
+              author={user.firstName}
+              text={
+                book.reviews.filter((r) => r.author.email === user.email)[0]
+                  .text
+              }
+              stars={
+                book.reviews.filter((r) => r.author.email === user.email)[0]
+                  .stars
+              }
+            />
             <TouchableOpacity
               onPress={() => {
-                setRateStars(1);
+                navigation.navigate("writereview", {
+                  book,
+                  review: book.reviews.filter(
+                    (r) => r.author.email === user.email
+                  )[0],
+                });
               }}
             >
-              <Image
-                source={
-                  rateStars >= 1
-                    ? icons.fullstar
-                    : isDarkMode
-                    ? icons.ratestar
-                    : icons.ratestarLight
-                }
-                style={{ width: 33, height: 33, resizeMode: "contain" }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setRateStars(2);
-              }}
-            >
-              <Image
-                source={
-                  rateStars >= 2
-                    ? icons.fullstar
-                    : isDarkMode
-                    ? icons.ratestar
-                    : icons.ratestarLight
-                }
-                style={{ width: 33, height: 33, resizeMode: "contain" }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setRateStars(3);
-              }}
-            >
-              <Image
-                source={
-                  rateStars >= 3
-                    ? icons.fullstar
-                    : isDarkMode
-                    ? icons.ratestar
-                    : icons.ratestarLight
-                }
-                style={{ width: 33, height: 33, resizeMode: "contain" }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setRateStars(4);
-              }}
-            >
-              <Image
-                source={
-                  rateStars >= 4
-                    ? icons.fullstar
-                    : isDarkMode
-                    ? icons.ratestar
-                    : icons.ratestarLight
-                }
-                style={{ width: 33, height: 33, resizeMode: "contain" }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setRateStars(5);
-              }}
-            >
-              <Image
-                source={
-                  rateStars >= 5
-                    ? icons.fullstar
-                    : isDarkMode
-                    ? icons.ratestar
-                    : icons.ratestarLight
-                }
-                style={{ width: 33, height: 33, resizeMode: "contain" }}
-              />
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("writereview", { book, stars: rateStars });
-            }}
-          >
-            <View
-              style={{
-                marginTop: 15,
-                marginBottom: 15,
-                borderColor: COLORS.primary,
-                borderWidth: 2,
-                borderRadius: 25,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-              }}
-            >
-              <Text
+              <View
                 style={{
-                  fontSize: 18,
-                  fontFamily: FONT.bold,
-                  color: COLORS.primary,
+                  marginTop: 15,
+                  marginBottom: 15,
+                  borderColor: COLORS.primary,
+                  borderWidth: 2,
+                  borderRadius: 25,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
                 }}
               >
-                Write a Review
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontFamily: FONT.bold,
+                    color: COLORS.primary,
+                    textAlign: "center",
+                  }}
+                >
+                  {i18n.t("BDSUpdateReview")}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={{ alignItems: "center" }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: FONT.bold,
+                color: isDarkMode ? COLORS.white : "#424242",
+              }}
+            >
+              {i18n.t("BDSRateThisBook")}
+            </Text>
+            <View style={{ flexDirection: "row", gap: 20, marginTop: 15 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setRateStars(1);
+                }}
+              >
+                <Image
+                  source={
+                    rateStars >= 1
+                      ? icons.fullstar
+                      : isDarkMode
+                      ? icons.ratestar
+                      : icons.ratestarLight
+                  }
+                  style={{ width: 33, height: 33, resizeMode: "contain" }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setRateStars(2);
+                }}
+              >
+                <Image
+                  source={
+                    rateStars >= 2
+                      ? icons.fullstar
+                      : isDarkMode
+                      ? icons.ratestar
+                      : icons.ratestarLight
+                  }
+                  style={{ width: 33, height: 33, resizeMode: "contain" }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setRateStars(3);
+                }}
+              >
+                <Image
+                  source={
+                    rateStars >= 3
+                      ? icons.fullstar
+                      : isDarkMode
+                      ? icons.ratestar
+                      : icons.ratestarLight
+                  }
+                  style={{ width: 33, height: 33, resizeMode: "contain" }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setRateStars(4);
+                }}
+              >
+                <Image
+                  source={
+                    rateStars >= 4
+                      ? icons.fullstar
+                      : isDarkMode
+                      ? icons.ratestar
+                      : icons.ratestarLight
+                  }
+                  style={{ width: 33, height: 33, resizeMode: "contain" }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setRateStars(5);
+                }}
+              >
+                <Image
+                  source={
+                    rateStars >= 5
+                      ? icons.fullstar
+                      : isDarkMode
+                      ? icons.ratestar
+                      : icons.ratestarLight
+                  }
+                  style={{ width: 33, height: 33, resizeMode: "contain" }}
+                />
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("writereview", { book, stars: rateStars });
+              }}
+            >
+              <View
+                style={{
+                  marginTop: 15,
+                  marginBottom: 15,
+                  borderColor: COLORS.primary,
+                  borderWidth: 2,
+                  borderRadius: 25,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontFamily: FONT.bold,
+                    color: COLORS.primary,
+                  }}
+                >
+                  {i18n.t("BDSWriteReview")}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
     </View>
   );

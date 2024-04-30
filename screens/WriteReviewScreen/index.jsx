@@ -17,18 +17,31 @@ import Button from "../../components/controls/Button";
 import AccentButton from "../../components/controls/AccentButton";
 import Toast from "react-native-toast-message";
 import axios from "axios";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function WriteReviewScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   const user = useSelector((state) => state.auth.user);
   const navigation = useNavigation();
-  const { book, stars } = route.params;
+  const { book, stars, review } = route.params;
   const [rateStars, setRateStars] = useState(0);
   const [text, setText] = useState("");
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   const widthButton =
     (Dimensions.get("window").width - (SIZES.ph * 2 + 16)) / 2;
   useEffect(() => {
-    setRateStars(stars);
+    if (!review) setRateStars(stars);
+    if (review) {
+      setRateStars(review.stars);
+      setText(review.text);
+    }
   }, []);
   return (
     <View
@@ -68,7 +81,7 @@ export default function WriteReviewScreen({ route }) {
               color: isDarkMode ? COLORS.white : "#424242",
             }}
           >
-            Rate this book
+            {i18n.t("BDSRateThisBook")}
           </Text>
           <View style={{ flexDirection: "row", gap: 20, marginTop: 15 }}>
             <TouchableOpacity
@@ -162,7 +175,7 @@ export default function WriteReviewScreen({ route }) {
         />
 
         <Input
-          label={"Describe Your Experience (Optional)"}
+          label={i18n.t("WRSDescribeBook")}
           multiline
           style={{ height: 240 }}
           maxLength={500}
@@ -180,20 +193,20 @@ export default function WriteReviewScreen({ route }) {
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <AccentButton
-            title={"Cancel"}
+            title={i18n.t("WRSCancel")}
             style={{ width: widthButton }}
             onPress={() => {
               navigation.goBack();
             }}
           />
           <Button
-            title="Submit"
+            title={i18n.t("WRSSubmit")}
             showShadow={true}
             onPress={() => {
               if (rateStars === 0) {
                 Toast.show({
-                  text1: "Warning",
-                  text2: "Please rate the book",
+                  text1: i18n.t("WRSWarning"),
+                  text2: i18n.t("WRSPleaseRateTheBook"),
                   position: "bottom",
                   type: "error",
                 });
@@ -208,8 +221,8 @@ export default function WriteReviewScreen({ route }) {
                 .then((response) => {
                   navigation.goBack();
                   Toast.show({
-                    text1: "Success",
-                    text2: "Your review has been submitted",
+                    text1: i18n.t("BDSSuccess"),
+                    text2: i18n.t("WRSReviewSubmitted"),
                     position: "bottom",
                     type: "success",
                   });

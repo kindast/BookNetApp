@@ -16,6 +16,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { setUser } from "../../redux/slices/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function OTPCodeScreen({ route }) {
   const navigation = useNavigation();
@@ -24,6 +27,13 @@ export default function OTPCodeScreen({ route }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const { verifyAccount, email } = route.params;
+
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
 
   useEffect(() => {
     const backAction = () => {
@@ -74,7 +84,7 @@ export default function OTPCodeScreen({ route }) {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          You've Got Mail 📩
+          {i18n.t("OTPTitle")}
         </Text>
         <Text
           style={{
@@ -84,8 +94,7 @@ export default function OTPCodeScreen({ route }) {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          We have sent the OTP verification code to your email address. Check
-          your email and enter the code below.
+          {i18n.t("OTPSubtitle")}
         </Text>
         <CodeInput style={{ marginTop: 50 }} onCodeChange={setCode} />
         <Text
@@ -109,7 +118,7 @@ export default function OTPCodeScreen({ route }) {
         }}
       >
         <Button
-          title="Confirm"
+          title={i18n.t("OTPButton")}
           showShadow={true}
           onPress={() => {
             if (verifyAccount && code.length === 4) {
@@ -127,11 +136,11 @@ export default function OTPCodeScreen({ route }) {
                   if (error.response.status === 403) {
                     navigation.popToTop();
                   } else {
-                    setError("Invalid code");
+                    setError(i18n.t("OTPInvalidCode"));
                   }
                 });
             } else if (code.length < 4) {
-              setError("Please enter a valid code");
+              setError(i18n.t("OTPEnterValidCode"));
             } else if (!verifyAccount) {
               axios
                 .get(api + "/api/verify-code", {
@@ -141,7 +150,7 @@ export default function OTPCodeScreen({ route }) {
                   navigation.replace("createnewpassword", { email, code });
                 })
                 .catch((error) => {
-                  setError(error.response.data.message);
+                  setError(i18n.t("OTPInvalidCode"));
                 });
             }
           }}

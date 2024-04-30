@@ -16,6 +16,9 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import DetailsButton from "../../components/controls/DetailsButton";
 import axios from "axios";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function HomeScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
@@ -24,6 +27,12 @@ export default function HomeScreen() {
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   const fetchBooks = () => {
     setIsLoading(true);
     axios
@@ -128,7 +137,11 @@ export default function HomeScreen() {
             BookNet
           </Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("search");
+          }}
+        >
           <Image
             source={isDarkMode ? icons.searchLight : icons.search}
             style={{ width: 25, height: 25 }}
@@ -154,10 +167,7 @@ export default function HomeScreen() {
             data={books}
             renderItem={({ item }) => (
               <BookCard
-                title={item.title}
-                rating={item.rating}
-                image={api + item.coverUrl}
-                price={item.price}
+                book={item}
                 onPress={() => {
                   navigation.navigate("bookdetails", { id: item.id });
                 }}
@@ -169,7 +179,7 @@ export default function HomeScreen() {
       </View>
       <View style={{ marginTop: 25 }}>
         <DetailsButton
-          title={"Explore by Genre"}
+          title={i18n.t("HSGenre")}
           onPress={() => {
             navigation.navigate("genres");
           }}

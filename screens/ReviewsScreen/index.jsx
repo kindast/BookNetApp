@@ -11,11 +11,20 @@ import { SIZES, FONT, COLORS, icons } from "../../constants";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import ProgressBar from "react-native-progress/Bar";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function ReviewsScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   const navigation = useNavigation();
   const { book } = route.params;
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   return (
     <View
       style={{
@@ -45,7 +54,7 @@ export default function ReviewsScreen({ route }) {
               marginLeft: 20,
             }}
           >
-            Ratings & Reviews
+            {i18n.t("BDSRatingsAndReviews")}
           </Text>
         </View>
       </View>
@@ -150,7 +159,7 @@ export default function ReviewsScreen({ route }) {
                 color: isDarkMode ? COLORS.white : COLORS.black,
               }}
             >
-              ({book?.reviews?.length} reviews)
+              ({book?.reviews?.length} {i18n.t("BDSReviews")})
             </Text>
           </View>
           <View
@@ -319,10 +328,10 @@ export default function ReviewsScreen({ route }) {
   );
 }
 
-const Review = ({ author, text, stars }) => {
+export const Review = ({ author, text, stars, style }) => {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   return (
-    <View>
+    <View style={{ ...style }}>
       <View
         style={{
           flexDirection: "row",

@@ -16,11 +16,11 @@ import {
 } from "react-native-popup-menu";
 import { useNavigation } from "@react-navigation/native";
 
-export default function WishListBookCard({
+export default function LibraryBookCard({
   book,
   onPress,
   style,
-  onRemoveWishlist,
+  onMarkFinished,
 }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   const navigation = useNavigation();
@@ -131,7 +131,7 @@ export default function WishListBookCard({
           <MenuOptions
             optionsContainerStyle={{ borderRadius: 20, paddingHorizontal: 20 }}
           >
-            <MenuOption onSelect={onRemoveWishlist}>
+            <MenuOption onSelect={onMarkFinished}>
               <View
                 style={{
                   flexDirection: "row",
@@ -150,7 +150,7 @@ export default function WishListBookCard({
                     color: isDarkMode ? COLORS.white : COLORS.black,
                   }}
                 >
-                  Remove from Wishlist
+                  Mark as Finished
                 </Text>
               </View>
             </MenuOption>

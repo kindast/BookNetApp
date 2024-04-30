@@ -1,8 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { useColorScheme, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   SplashScreen,
@@ -19,35 +19,72 @@ import {
   AboutBookScreen,
   ReviewsScreen,
   WriteReviewScreen,
+  SearchScreen,
+  LanguageScreen,
 } from "./screens";
-import { setIsDarkMode } from "./redux/slices/settingsSlice";
+import {
+  setI18n,
+  setIsDarkMode,
+  setLocale,
+} from "./redux/slices/settingsSlice";
 import { setUser } from "./redux/slices/authSlice";
-import { useFonts } from "expo-font";
+import { loadAsync, useFonts } from "expo-font";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { MenuProvider } from "react-native-popup-menu";
+import { hideAsync, preventAutoHideAsync } from "expo-splash-screen";
+import { getLocales } from "expo-localization";
+import { I18n } from "i18n-js";
 
 const Stack = createNativeStackNavigator();
-
+preventAutoHideAsync();
 export default function App() {
-  const [fontsLoaded] = useFonts({
-    "Urbanist-Bold": require("./assets/fonts/Urbanist-Bold.ttf"),
-    "Urbanist-Regular": require("./assets/fonts/Urbanist-Regular.ttf"),
-  });
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const fonts = {
+    "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
+    "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
+  };
+
+  useEffect(() => {
+    async function loadLocalization() {
+      const locale = await AsyncStorage.getItem("locale");
+      if (locale === null) {
+        locale = getLocales()[0].languageCode;
+      }
+      dispatch(setLocale(locale));
+    }
+    loadLocalization();
+  }, []);
+
+  useEffect(() => {
+    async function loadFonts() {
+      await loadAsync(fonts);
+      setFontsLoaded(true);
+      await hideAsync();
+    }
+    loadFonts();
+  }, []);
+
   const theme = useColorScheme();
   const { user } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(setIsDarkMode(theme === "dark"));
   }, [theme]);
-  useEffect(async () => {
-    const userJson = await AsyncStorage.getItem("user");
-    let user = userJson != null ? JSON.parse(userJson) : null;
-    user && dispatch(setUser(user));
-    setIsLoading(false);
+
+  useEffect(() => {
+    async function loadUser() {
+      const userJson = await AsyncStorage.getItem("user");
+      let user = userJson != null ? JSON.parse(userJson) : null;
+      user && dispatch(setUser(user));
+      setIsLoading(false);
+    }
+    loadUser();
   }, []);
-  return (
+
+  return fontsLoaded ? (
     <MenuProvider>
       <NavigationContainer>
         <StatusBar style={theme === "dark" ? "light" : "dark"} />
@@ -88,6 +125,8 @@ export default function App() {
                   name="writereview"
                   component={WriteReviewScreen}
                 />
+                <Stack.Screen name="search" component={SearchScreen} />
+                <Stack.Screen name="language" component={LanguageScreen} />
               </>
             )}
           </Stack.Navigator>
@@ -95,5 +134,5 @@ export default function App() {
         <Toast />
       </NavigationContainer>
     </MenuProvider>
-  );
+  ) : null;
 }

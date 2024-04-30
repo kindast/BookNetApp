@@ -14,6 +14,9 @@ import Button from "../../components/controls/Button";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import axios from "axios";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function SignUpScreen() {
   const navigation = useNavigation();
@@ -30,6 +33,13 @@ export default function SignUpScreen() {
   const [isLastNameValid, setIsLastNameValid] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [error, setError] = useState("");
+
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
 
   const keyboardShowListener = Keyboard.addListener("keyboardDidShow", () => {
     setIsKeyboardVisible(true);
@@ -74,7 +84,7 @@ export default function SignUpScreen() {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Create An Account 🔐
+          {i18n.t("SUSTitle")}
         </Text>
         <Text
           style={{
@@ -84,14 +94,13 @@ export default function SignUpScreen() {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Enter your email & password. If you forget it, then you have to do
-          forgot password.
+          {i18n.t("SUSSubtitle")}
         </Text>
         <Input
           style={{ marginTop: 32 }}
-          label="First Name"
+          label={i18n.t("SUSFirstName")}
           keyboardType="default"
-          placeholder="First Name"
+          placeholder={i18n.t("SUSFirstName")}
           maxLength={30}
           value={firstName}
           onChangeText={setFirstName}
@@ -99,20 +108,20 @@ export default function SignUpScreen() {
             let regex = /^[а-яА-Яa-zA-Z]{1,30}$/;
             if (firstName.trim().length === 0) {
               setIsFirstNameValid(false);
-              return "First Name is required";
+              return i18n.t("SUSFirstNameRequired");
             }
             if (!regex.test(firstName)) {
               setIsFirstNameValid(false);
-              return "First Name soudn't contain digits and special characters";
+              return i18n.t("SUSFirstNameDigitsAndSymbols");
             }
             setIsFirstNameValid(true);
           }}
         />
         <Input
           style={{ marginTop: 32 }}
-          label="Last Name"
+          label={i18n.t("SUSLastName")}
           keyboardType="default"
-          placeholder="Last Name"
+          placeholder={i18n.t("SUSLastName")}
           maxLength={30}
           value={lastName}
           onChangeText={setLastName}
@@ -120,20 +129,20 @@ export default function SignUpScreen() {
             let regex = /^[а-яА-Яa-zA-Z]{1,30}$/;
             if (lastName.trim().length === 0) {
               setIsLastNameValid(false);
-              return "Last Name is required";
+              return i18n.t("SUSLastNameRequired");
             }
             if (!regex.test(lastName)) {
               setIsLastNameValid(false);
-              return "Last Name soudn't contain digits and special characters";
+              return i18n.t("SUSLastNameDigitsAndSymbols");
             }
             setIsLastNameValid(true);
           }}
         />
         <Input
           style={{ marginTop: 32 }}
-          label="Email"
+          label={i18n.t("SUSEmail")}
           keyboardType="email-address"
-          placeholder="Email"
+          placeholder={i18n.t("SUSEmail")}
           maxLength={30}
           value={email}
           onChangeText={setEmail}
@@ -141,20 +150,20 @@ export default function SignUpScreen() {
             let regex = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
             if (email.trim().length === 0) {
               setIsEmailValid(false);
-              return "Email is required";
+              return i18n.t("SUSEmailRequired");
             }
             if (!regex.test(email)) {
               setIsEmailValid(false);
-              return "Email does not match format example@email.com";
+              return i18n.t("SUSEmailInvalid");
             }
             setIsEmailValid(true);
           }}
         />
         <Input
           style={{ marginTop: 24 }}
-          label="Password"
+          label={i18n.t("SUSPassword")}
           keyboardType="default"
-          placeholder="Password"
+          placeholder={i18n.t("SUSPassword")}
           secureTextEntry
           maxLength={25}
           value={password}
@@ -163,20 +172,20 @@ export default function SignUpScreen() {
             let regex = /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/;
             if (password.trim().length === 0) {
               setIsPasswordValid(false);
-              return "Password is required";
+              return i18n.t("SUSPasswordRequired");
             }
             if (!regex.test(password)) {
               setIsPasswordValid(false);
-              return "The password must be a minimum of 6 characters, with at least 1 uppercase letter, 1 lowercase letter and 1 number, with no spaces";
+              return i18n.t("SUSPasswordInvalid");
             }
             setIsPasswordValid(true);
           }}
         />
         <Input
           style={{ marginTop: 24, marginBottom: 100 }}
-          label="Confirm Password"
+          label={i18n.t("SUSConfirmPassword")}
           keyboardType="default"
-          placeholder="Confirm Password"
+          placeholder={i18n.t("SUSConfirmPassword")}
           secureTextEntry
           maxLength={25}
           value={confirmPassword}
@@ -184,7 +193,7 @@ export default function SignUpScreen() {
           validation={() => {
             if (confirmPassword !== password) {
               setIsConfirmPasswordValid(false);
-              return "Passwords don't match";
+              return i18n.t("SUSConfirmPasswordInvalid");
             }
             setIsConfirmPasswordValid(true);
           }}
@@ -211,7 +220,7 @@ export default function SignUpScreen() {
           }}
         >
           <Button
-            title="Sign Up"
+            title={i18n.t("SUSButton")}
             showShadow={true}
             onPress={() => {
               if (

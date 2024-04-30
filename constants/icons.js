@@ -31,6 +31,18 @@ import documentLight from "../assets/icons/documentLight.png";
 import closedEye from "../assets/icons/closedEye.png";
 import openedEye from "../assets/icons/openedEye.png";
 import logout from "../assets/icons/logout.png";
+import filter from "../assets/icons/filter.png";
+import radioEmpty from "../assets/icons/radio-empty.png";
+import radioFill from "../assets/icons/radio-fill.png";
+import cross from "../assets/icons/cross.png";
+import crossLight from "../assets/icons/crossLight.png";
+import list from "../assets/icons/list.png";
+import listFill from "../assets/icons/list-fill.png";
+import view from "../assets/icons/view.png";
+import viewFill from "../assets/icons/view-fill.png";
+import language from "../assets/icons/language.png";
+import smallArrow from "../assets/icons/smallArrow.png";
+import smallArrowLight from "../assets/icons/smallArrowLight.png";
 
 export default {
   logo,
@@ -66,4 +78,16 @@ export default {
   closedEye,
   openedEye,
   logout,
+  filter,
+  radioEmpty,
+  radioFill,
+  cross,
+  crossLight,
+  list,
+  listFill,
+  view,
+  viewFill,
+  language,
+  smallArrow,
+  smallArrowLight,
 };

@@ -10,6 +10,9 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUser } from "../../redux/slices/authSlice";
 import Toast from "react-native-toast-message";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function SignInScreen() {
   const navigation = useNavigation();
@@ -18,6 +21,13 @@ export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
 
   return (
     <View
@@ -47,7 +57,7 @@ export default function SignInScreen() {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Hello there 👋
+          {i18n.t("SISTitle")}
         </Text>
         <Text
           style={{
@@ -57,22 +67,22 @@ export default function SignInScreen() {
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
         >
-          Please enter your email & password to sign in.
+          {i18n.t("SISSubtitle")}
         </Text>
         <Input
           style={{ marginTop: 32 }}
-          label="Email"
+          label={i18n.t("SUSEmail")}
           keyboardType="default"
-          placeholder="Email"
+          placeholder={i18n.t("SUSEmail")}
           maxLength={30}
           value={email}
           onChangeText={setEmail}
         />
         <Input
           style={{ marginTop: 24 }}
-          label="Password"
+          label={i18n.t("SUSPassword")}
           keyboardType="default"
-          placeholder="Password"
+          placeholder={i18n.t("SUSPassword")}
           maxLength={25}
           value={password}
           onChangeText={setPassword}
@@ -102,7 +112,7 @@ export default function SignInScreen() {
               marginTop: 50,
             }}
           >
-            Forgot Password
+            {i18n.t("SISForgotPasssword")}
           </Text>
         </TouchableOpacity>
         <Text
@@ -114,7 +124,7 @@ export default function SignInScreen() {
             marginTop: 50,
           }}
         >
-          or
+          {i18n.t("SISOr")}
         </Text>
         <GoogleButton style={{ marginTop: 50 }} />
       </View>
@@ -128,7 +138,7 @@ export default function SignInScreen() {
         }}
       >
         <Button
-          title="Sign In"
+          title={i18n.t("SISButton")}
           showShadow={true}
           onPress={() => {
             axios
@@ -141,13 +151,11 @@ export default function SignInScreen() {
                 dispatch(setUser(data));
               })
               .catch((error) => {
-                alert(error);
-                Toast.show({ text1: error.message });
                 if (error.response.status === 400) {
                   if (!email || !password) {
-                    setError("Please enter email & password");
+                    setError(i18n.t("SISEnterEmailAndPassword"));
                   } else {
-                    setError("Wrong email or password");
+                    setError(i18n.t("SISWrongEmailOrPassword"));
                   }
                 }
                 if (error.response.status === 301) {

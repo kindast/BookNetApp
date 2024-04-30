@@ -1,22 +1,15 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, FONT, icons } from "../../constants";
+import { COLORS, FONT, api, icons } from "../../constants";
 import { useSelector } from "react-redux";
 
-export default function BookCard({
-  title,
-  image,
-  rating,
-  price,
-  onPress,
-  style,
-}) {
+export default function BookCard({ book, onPress, style }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={{ width: 180, ...style }}>
         <Image
           source={{
-            uri: image,
+            uri: api + book.coverUrl,
           }}
           style={{
             width: 180,
@@ -35,7 +28,7 @@ export default function BookCard({
             marginTop: 8,
           }}
         >
-          {title}
+          {book.title}
         </Text>
         <View
           style={{ flexDirection: "row", alignItems: "center", marginTop: 5 }}
@@ -52,7 +45,7 @@ export default function BookCard({
               marginLeft: 8,
             }}
           >
-            {rating}
+            {book.rating}
           </Text>
           <Text
             style={{
@@ -62,7 +55,7 @@ export default function BookCard({
               marginLeft: 14,
             }}
           >
-            {price}₽
+            {book.price}₽
           </Text>
         </View>
       </View>

@@ -15,6 +15,9 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import WishListBookCard from "../../components/cards/WishListBookCard";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function WishListScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
@@ -22,7 +25,12 @@ export default function WishListScreen() {
   const navigation = useNavigation();
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   const fetchMyBooks = () => {
     setIsLoading(true);
     axios
@@ -31,11 +39,12 @@ export default function WishListScreen() {
       })
       .then((response) => {
         setBooks(response.data);
+        setIsLoading(false);
       })
       .catch((error) => {
         setBooks([]);
+        setIsLoading(false);
       });
-    setIsLoading(false);
   };
 
   useFocusEffect(
@@ -67,7 +76,7 @@ export default function WishListScreen() {
               marginLeft: 15,
             }}
           >
-            Wishlist
+            {i18n.t("WLSTitle")}
           </Text>
         </View>
         <TouchableOpacity>
@@ -95,7 +104,7 @@ export default function WishListScreen() {
                 fontSize: 16,
               }}
             >
-              No books added to wishlist
+              {i18n.t("WLSNoBooks")}
             </Text>
           </View>
         ) : (
@@ -104,14 +113,21 @@ export default function WishListScreen() {
             data={books}
             renderItem={({ item }) => (
               <WishListBookCard
-                title={item.title}
-                rating={item.rating}
-                image={api + item.coverUrl}
-                price={item.price}
+                book={item}
                 onPress={() => {
                   navigation.navigate("bookdetails", { id: item.id });
                 }}
                 style={{ marginBottom: 15 }}
+                onRemoveWishlist={() => {
+                  axios
+                    .get(api + "/api/wishlist-book", {
+                      params: { id: item.id },
+                      headers: { Authorization: "Bearer " + user.token },
+                    })
+                    .then((response) => {
+                      setBooks(books.filter((book) => book.id !== item.id));
+                    });
+                }}
               />
             )}
           />

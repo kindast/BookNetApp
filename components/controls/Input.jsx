@@ -60,6 +60,7 @@ export default function Input({
             fontSize: SIZES.input,
             color: isDarkMode ? COLORS.white : COLORS.black,
           }}
+          cursorColor={COLORS.primary}
           placeholderTextColor={isDarkMode ? COLORS.white : COLORS.black}
           placeholder={placeholder}
           keyboardType={keyboardType}

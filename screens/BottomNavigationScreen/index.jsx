@@ -3,11 +3,19 @@ import { AccountScreen, HomeScreen, LibraryScreen, WishListScreen } from "..";
 import { COLORS, FONT, icons } from "../../constants";
 import { Image, Text, View } from "react-native";
 import { useSelector } from "react-redux";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 const Tab = createBottomTabNavigator();
 export default function BottomNavigationScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
-
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   return (
     <Tab.Navigator
       screenOptions={{
@@ -46,7 +54,7 @@ export default function BottomNavigationScreen() {
                     lineHeight: 14,
                   }}
                 >
-                  Home
+                  {i18n.t("Home")}
                 </Text>
               </View>
             );
@@ -73,7 +81,7 @@ export default function BottomNavigationScreen() {
                     lineHeight: 14,
                   }}
                 >
-                  Wishlist
+                  {i18n.t("Wishlist")}
                 </Text>
               </View>
             );
@@ -100,7 +108,7 @@ export default function BottomNavigationScreen() {
                     lineHeight: 14,
                   }}
                 >
-                  Purchased
+                  {i18n.t("Purchased")}
                 </Text>
               </View>
             );
@@ -127,7 +135,7 @@ export default function BottomNavigationScreen() {
                     lineHeight: 14,
                   }}
                 >
-                  Account
+                  {i18n.t("Account")}
                 </Text>
               </View>
             );

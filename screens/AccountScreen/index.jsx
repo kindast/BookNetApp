@@ -13,11 +13,21 @@ import { useNavigation } from "@react-navigation/native";
 import WishListBookCard from "../../components/cards/WishListBookCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUser } from "../../redux/slices/authSlice";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function AccountScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const locale = useSelector((state) => state.settings.locale);
+  const navigation = useNavigation();
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   return (
     <View
       style={{
@@ -41,7 +51,7 @@ export default function AccountScreen() {
               marginLeft: 15,
             }}
           >
-            Account
+            {i18n.t("ASTitle")}
           </Text>
         </View>
       </View>
@@ -58,9 +68,15 @@ export default function AccountScreen() {
             width: 56,
             height: 56,
             borderRadius: 1000,
-            backgroundColor: "rgba(0,0,0,0.1)",
+            backgroundColor: COLORS.primary,
+            justifyContent: "center",
+            alignItems: "center",
           }}
-        />
+        >
+          <Text style={{ fontFamily: FONT.bold, fontSize: 20, color: "white" }}>
+            {user.email[0].toUpperCase()}
+          </Text>
+        </View>
         <View style={{ gap: 5 }}>
           <Text
             style={{
@@ -90,10 +106,61 @@ export default function AccountScreen() {
         }}
       />
       <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("language");
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+            <Image
+              source={icons.language}
+              style={{ width: 56, height: 56, resizeMode: "contain" }}
+            />
+            <Text
+              style={{
+                fontFamily: FONT.bold,
+                fontSize: 20,
+                color: isDarkMode ? COLORS.white : COLORS.black,
+              }}
+            >
+              {i18n.t("ABSLanguage")}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 25,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: FONT.regular,
+                fontSize: 18,
+                color: isDarkMode ? COLORS.white : COLORS.black,
+              }}
+            >
+              {locale === "en" ? i18n.t("ABSEnglish") : i18n.t("ABSRussian")}
+            </Text>
+            <Image
+              source={isDarkMode ? icons.smallArrowLight : icons.smallArrow}
+              style={{ height: 14, width: 8, resizeMode: "contain" }}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
         onPress={async () => {
           await AsyncStorage.removeItem("user");
           dispatch(setUser(null));
         }}
+        style={{ marginTop: 25 }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
           <Image
@@ -103,7 +170,7 @@ export default function AccountScreen() {
           <Text
             style={{ fontFamily: FONT.bold, fontSize: 20, color: "#f85555" }}
           >
-            Logout
+            {i18n.t("ASLogout")}
           </Text>
         </View>
       </TouchableOpacity>

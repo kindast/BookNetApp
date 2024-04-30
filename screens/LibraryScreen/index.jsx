@@ -13,6 +13,10 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import WishListBookCard from "../../components/cards/WishListBookCard";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import LibraryBookCard from "../../components/cards/LibraryBookCard";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function LibraryScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
@@ -20,7 +24,12 @@ export default function LibraryScreen() {
   const navigation = useNavigation();
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   const fetchMyBooks = () => {
     setIsLoading(true);
     axios
@@ -29,8 +38,8 @@ export default function LibraryScreen() {
       })
       .then((response) => {
         setBooks(response.data);
+        setIsLoading(false);
       });
-    setIsLoading(false);
   };
 
   useFocusEffect(
@@ -62,7 +71,7 @@ export default function LibraryScreen() {
               marginLeft: 15,
             }}
           >
-            Purchased
+            {i18n.t("LSTitle")}
           </Text>
         </View>
         <TouchableOpacity>
@@ -90,7 +99,7 @@ export default function LibraryScreen() {
                 fontSize: 16,
               }}
             >
-              No purchased books yet
+              {i18n.t("LSNoBooks")}
             </Text>
           </View>
         ) : (
@@ -98,11 +107,8 @@ export default function LibraryScreen() {
             showsVerticalScrollIndicator={false}
             data={books}
             renderItem={({ item }) => (
-              <WishListBookCard
-                title={item.title}
-                rating={item.rating}
-                image={api + item.coverUrl}
-                price={item.price}
+              <LibraryBookCard
+                book={item}
                 onPress={() => {
                   navigation.navigate("bookdetails", { id: item.id });
                 }}

@@ -6,10 +6,19 @@ import Button from "../../components/controls/Button";
 import AccentButton from "../../components/controls/AccentButton";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function WelcomeScreen() {
   const nagigation = useNavigation();
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
 
   return (
     <View
@@ -26,7 +35,7 @@ export default function WelcomeScreen() {
       <View>
         <View
           style={{
-            flexDirection: "row",
+            flexDirection: locale === "ru" ? "column" : "row",
             columnGap: 10,
             marginTop: 24,
             justifyContent: "center",
@@ -39,7 +48,7 @@ export default function WelcomeScreen() {
               fontSize: SIZES.h1,
             }}
           >
-            Welcome to
+            {i18n.t("WSWelcome")}
           </Text>
           <Text
             style={{
@@ -60,18 +69,18 @@ export default function WelcomeScreen() {
             marginTop: 16,
           }}
         >
-          The Number One Best Ebook Store & Reader Application in this Century
+          {i18n.t("WSBest")}
         </Text>
         <GoogleButton style={{ marginTop: 32 }} onPress={() => {}} />
         <Button
-          title="Get Started"
+          title={i18n.t("WSGetStarted")}
           style={{ marginTop: 16 }}
           onPress={() => {
             nagigation.navigate("signup");
           }}
         />
         <AccentButton
-          title="I Already Have an Account"
+          title={i18n.t("WSAlreadyHaveAnAccount")}
           style={{ marginTop: 16 }}
           onPress={() => {
             nagigation.navigate("signin");
