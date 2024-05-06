@@ -7,7 +7,7 @@ import {
   Keyboard,
 } from "react-native";
 import { FONT, SIZES, COLORS, icons } from "../../constants";
-import React from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 export default function Input({
@@ -16,17 +16,16 @@ export default function Input({
   keyboardType,
   value,
   onChangeText,
+  onBlur,
   style,
   secureTextEntry,
   multiline,
   maxLength,
-  validation = () => {},
+  error,
 }) {
   const [isFocused, setIsFocused] = React.useState(false);
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   const [isInvisible, setIsInvisible] = React.useState(true);
-  const [isFocusedFirst, setIsFocusedFirst] = React.useState(false);
-
   return (
     <View style={style}>
       <Text
@@ -45,14 +44,13 @@ export default function Input({
           secureTextEntry={secureTextEntry && isInvisible}
           style={{
             marginTop: 16,
-            borderBottomColor:
-              validation() && isFocusedFirst
-                ? "#ff628c"
-                : isFocused
-                ? COLORS.primary
-                : isDarkMode
-                ? COLORS.white
-                : COLORS.black,
+            borderBottomColor: error
+              ? "#ff628c"
+              : isFocused
+              ? COLORS.primary
+              : isDarkMode
+              ? COLORS.white
+              : COLORS.black,
             borderBottomWidth: 1,
             padding: 0,
             paddingBottom: 8,
@@ -66,12 +64,14 @@ export default function Input({
           keyboardType={keyboardType}
           value={value}
           onChangeText={onChangeText}
-          onSubmitEditing={Keyboard.dismiss}
+          onSubmitEditing={() => {}}
           onFocus={() => {
             setIsFocused(true);
-            setIsFocusedFirst(true);
           }}
-          onBlur={() => setIsFocused(false)}
+          onBlur={(event) => {
+            setIsFocused(false);
+            if (onBlur) onBlur(event);
+          }}
         />
 
         {secureTextEntry && (
@@ -86,20 +86,17 @@ export default function Input({
           </TouchableOpacity>
         )}
       </View>
-      {validation() && isFocusedFirst && (
-        <View>
-          <Text
-            style={{
-              fontFamily: FONT.regular,
-              marginTop: 5,
-              fontSize: 16,
-              color: "#ff628c",
-            }}
-          >
-            {validation()}
-          </Text>
-        </View>
-      )}
+      <Text
+        style={{
+          fontFamily: FONT.regular,
+          marginTop: error ? 5 : 0,
+          display: error ? "flex" : "none",
+          fontSize: 16,
+          color: "#ff628c",
+        }}
+      >
+        {error}
+      </Text>
     </View>
   );
 }

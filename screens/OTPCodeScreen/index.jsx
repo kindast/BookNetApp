@@ -128,7 +128,6 @@ export default function OTPCodeScreen({ route }) {
                 })
                 .then(async (response) => {
                   let data = response.data;
-                  console.log(data);
                   await AsyncStorage.setItem("user", JSON.stringify(data));
                   dispatch(setUser(data));
                 })

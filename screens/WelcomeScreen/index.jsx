@@ -11,7 +11,7 @@ import russian from "../../locales/russian.json";
 import { I18n } from "i18n-js";
 
 export default function WelcomeScreen() {
-  const nagigation = useNavigation();
+  const navigation = useNavigation();
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   const locale = useSelector((state) => state.settings.locale);
   const i18n = new I18n({
@@ -76,14 +76,14 @@ export default function WelcomeScreen() {
           title={i18n.t("WSGetStarted")}
           style={{ marginTop: 16 }}
           onPress={() => {
-            nagigation.navigate("signup");
+            navigation.navigate("signup");
           }}
         />
         <AccentButton
           title={i18n.t("WSAlreadyHaveAnAccount")}
           style={{ marginTop: 16 }}
           onPress={() => {
-            nagigation.navigate("signin");
+            navigation.navigate("signin");
           }}
         />
       </View>

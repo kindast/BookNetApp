@@ -1,5 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { AccountScreen, HomeScreen, LibraryScreen, WishListScreen } from "..";
+import AccountScreen from "../AccountScreen";
+import HomeScreen from "../HomeScreen";
+import LibraryScreen from "../LibraryScreen";
+import WishListScreen from "../WishListScreen";
 import { COLORS, FONT, icons } from "../../constants";
 import { Image, Text, View } from "react-native";
 import { useSelector } from "react-redux";

@@ -36,6 +36,8 @@
   "SUSPasswordRequired": "Password is required",
   "SUSPasswordInvalid": "The password must be a minimum of 6 characters, with at least 1 uppercase letter, 1 lowercase letter and 1 number, with no spaces",
   "SUSConfirmPasswordInvalid": "Passwords don't match",
+  "SUSConfirmPasswordRequired": "Confirm Password is required",
+  "SUSEmailAlreadyExists": "This email address is already taken",
   "SISTitle": "Hello there 👋",
   "SISSubtitle": "Please enter your email & password to sign in.",
   "SISForgotPasssword": "Forgot Password",

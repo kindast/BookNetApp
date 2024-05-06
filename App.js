@@ -22,11 +22,7 @@ import {
   SearchScreen,
   LanguageScreen,
 } from "./screens";
-import {
-  setI18n,
-  setIsDarkMode,
-  setLocale,
-} from "./redux/slices/settingsSlice";
+import { setIsDarkMode, setLocale } from "./redux/slices/settingsSlice";
 import { setUser } from "./redux/slices/authSlice";
 import { loadAsync, useFonts } from "expo-font";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -34,7 +30,6 @@ import Toast from "react-native-toast-message";
 import { MenuProvider } from "react-native-popup-menu";
 import { hideAsync, preventAutoHideAsync } from "expo-splash-screen";
 import { getLocales } from "expo-localization";
-import { I18n } from "i18n-js";
 
 const Stack = createNativeStackNavigator();
 preventAutoHideAsync();
@@ -46,23 +41,13 @@ export default function App() {
   };
 
   useEffect(() => {
-    async function loadLocalization() {
-      const locale = await AsyncStorage.getItem("locale");
-      if (locale === null) {
-        locale = getLocales()[0].languageCode;
-      }
-      dispatch(setLocale(locale));
-    }
-    loadLocalization();
-  }, []);
-
-  useEffect(() => {
-    async function loadFonts() {
+    async function loadSettings() {
       await loadAsync(fonts);
       setFontsLoaded(true);
+
       await hideAsync();
     }
-    loadFonts();
+    loadSettings();
   }, []);
 
   const theme = useColorScheme();
@@ -79,6 +64,13 @@ export default function App() {
       const userJson = await AsyncStorage.getItem("user");
       let user = userJson != null ? JSON.parse(userJson) : null;
       user && dispatch(setUser(user));
+
+      let locale = await AsyncStorage.getItem("locale");
+      if (locale === null) {
+        locale = getLocales()[0].languageCode;
+      }
+      dispatch(setLocale(locale));
+
       setIsLoading(false);
     }
     loadUser();
