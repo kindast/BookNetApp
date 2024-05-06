@@ -15,6 +15,9 @@ import {
   MenuOptions,
 } from "react-native-popup-menu";
 import { useNavigation } from "@react-navigation/native";
+import english from "../../locales/english.json";
+import russian from "../../locales/russian.json";
+import { I18n } from "i18n-js";
 
 export default function WishListBookCard({
   book,
@@ -23,6 +26,12 @@ export default function WishListBookCard({
   onRemoveWishlist,
 }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
+  const locale = useSelector((state) => state.settings.locale);
+  const i18n = new I18n({
+    en: english,
+    ru: russian,
+  });
+  i18n.locale = locale;
   const navigation = useNavigation();
   return (
     <TouchableOpacity onPress={onPress}>
@@ -129,7 +138,11 @@ export default function WishListBookCard({
             </View>
           </MenuTrigger>
           <MenuOptions
-            optionsContainerStyle={{ borderRadius: 20, paddingHorizontal: 20 }}
+            optionsContainerStyle={{
+              borderRadius: 20,
+              paddingHorizontal: 20,
+              flex: 1,
+            }}
           >
             <MenuOption onSelect={onRemoveWishlist}>
               <View
@@ -150,7 +163,7 @@ export default function WishListBookCard({
                     color: isDarkMode ? COLORS.white : COLORS.black,
                   }}
                 >
-                  Remove from Wishlist
+                  {i18n.t("WLSRemoveBook")}
                 </Text>
               </View>
             </MenuOption>
@@ -183,7 +196,7 @@ export default function WishListBookCard({
                     color: isDarkMode ? COLORS.white : COLORS.black,
                   }}
                 >
-                  About Ebook
+                  {i18n.t("WLSAboutBook")}
                 </Text>
               </View>
             </MenuOption>

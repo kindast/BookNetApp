@@ -15,7 +15,6 @@ import { I18n } from "i18n-js";
 import { useEffect, useState } from "react";
 import { setLocale } from "../../redux/slices/settingsSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Updates from "expo-updates";
 
 export default function LanguageScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);

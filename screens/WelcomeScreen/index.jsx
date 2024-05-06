@@ -32,13 +32,14 @@ export default function WelcomeScreen() {
       <View style={styles.imageContainer}>
         <Image source={images.shelfbook} style={styles.shelfbook} />
       </View>
-      <View>
+      <View style={{ width: "100%" }}>
         <View
           style={{
             flexDirection: locale === "ru" ? "column" : "row",
             columnGap: 10,
             marginTop: 24,
             justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <Text
@@ -71,7 +72,6 @@ export default function WelcomeScreen() {
         >
           {i18n.t("WSBest")}
         </Text>
-        <GoogleButton style={{ marginTop: 32 }} onPress={() => {}} />
         <Button
           title={i18n.t("WSGetStarted")}
           style={{ marginTop: 16 }}

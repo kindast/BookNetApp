@@ -109,24 +109,12 @@ export default function SignInScreen() {
               fontSize: SIZES.medium,
               color: COLORS.primary,
               textAlign: "center",
-              marginTop: 50,
+              marginTop: 25,
             }}
           >
             {i18n.t("SISForgotPasssword")}
           </Text>
         </TouchableOpacity>
-        <Text
-          style={{
-            fontFamily: FONT.bold,
-            fontSize: SIZES.medium,
-            color: "#616161",
-            textAlign: "center",
-            marginTop: 50,
-          }}
-        >
-          {i18n.t("SISOr")}
-        </Text>
-        <GoogleButton style={{ marginTop: 50 }} />
       </View>
       <View
         style={{

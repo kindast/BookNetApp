@@ -78,6 +78,8 @@
   "LSNoBooks": "No purchased books yet",
   "WLSTitle": "Wishlist",
   "WLSNoBooks": "No books added to wishlist",
+  "WLSRemoveBook": "Remove from Wishlist",
+  "WLSAboutBook": "About Ebook",
   "BDSSuccess": "Success",
   "BDSAddWishlist": "Book added to wishlist",
   "BDSRemoveWishlist": "Book deleted from wishlist",
