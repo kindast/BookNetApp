@@ -11,16 +11,20 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { COLORS, FONT, SIZES, api, icons } from "../../constants";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import Button from "../../components/controls/Button";
 import DetailsButton from "../../components/controls/DetailsButton";
-import ProgressBar from "react-native-progress/Bar";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import { Review } from "../ReviewsScreen";
 import english from "../../locales/english.json";
 import russian from "../../locales/russian.json";
 import { I18n } from "i18n-js";
+import RatingView from "../../components/RatingView";
+import RatingInput from "../../components/RatingInput";
+import TransparentButton from "../../components/controls/TransparentButton";
+import Review from "../../components/controls/Review";
+import VerticalSeparator from "../../components/controls/VerticalSeparator";
+import HorizontalSeparator from "../../components/controls/HorizontalSeparator";
 
 export default function BookDetailsScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
@@ -62,12 +66,6 @@ export default function BookDetailsScreen({ route }) {
     }, [])
   );
 
-  const countReviews = (stars) => {
-    let procent =
-      book?.reviews?.filter((review) => review.stars === stars).length /
-      book?.reviews?.length;
-    return procent ? procent : 0;
-  };
   return isLoading ? (
     <View
       style={{
@@ -244,140 +242,30 @@ export default function BookDetailsScreen({ route }) {
             justifyContent: "space-around",
           }}
         >
-          <View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: FONT.bold,
-                  fontSize: 18,
-                  color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
-                }}
-              >
-                {book?.rating}
-              </Text>
-              <Image
-                source={isDarkMode ? icons.starLight : icons.star}
-                style={{
-                  width: 17,
-                  height: 17,
-                  resizeMode: "contain",
-                  marginLeft: 9,
-                }}
-              />
-            </View>
-            <Text
-              style={{
-                fontFamily: FONT.regular,
-                color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
-                fontSize: 14,
-                marginTop: 6,
-              }}
-            >
-              {book?.reviews?.length} {i18n.t("BDSReviews")}
-            </Text>
-          </View>
-          <View
-            style={{
-              width: 1,
-              backgroundColor: isDarkMode ? "#fff" : "rgba(0,0,0,0.1)",
-            }}
+          <InfoItem
+            mainText={book?.rating}
+            subText={book?.reviews?.length + " " + i18n.t("BDSReviews")}
+            icon={isDarkMode ? icons.starLight : icons.star}
+            isDarkMode={isDarkMode}
           />
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: FONT.bold,
-                fontSize: 18,
-                color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
-              }}
-            >
-              {book?.size}
-            </Text>
-            <Text
-              style={{
-                fontFamily: FONT.regular,
-                color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
-                fontSize: 14,
-                marginTop: 6,
-              }}
-            >
-              {i18n.t("BDSSize")}
-            </Text>
-          </View>
-          <View
-            style={{
-              width: 1,
-              backgroundColor: isDarkMode ? "#fff" : "rgba(0,0,0,0.1)",
-            }}
+          <VerticalSeparator isDarkMode={isDarkMode} />
+          <InfoItem
+            mainText={book?.size}
+            subText={i18n.t("BDSSize")}
+            isDarkMode={isDarkMode}
           />
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: FONT.bold,
-                fontSize: 18,
-                color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
-              }}
-            >
-              {book?.pages}
-            </Text>
-            <Text
-              style={{
-                fontFamily: FONT.regular,
-                color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
-                fontSize: 14,
-                marginTop: 6,
-              }}
-            >
-              {i18n.t("BDSPages")}
-            </Text>
-          </View>
-          <View
-            style={{
-              width: 1,
-              backgroundColor: isDarkMode ? "#fff" : "rgba(0,0,0,0.1)",
-            }}
+          <VerticalSeparator isDarkMode={isDarkMode} />
+          <InfoItem
+            mainText={book?.pages}
+            subText={i18n.t("BDSPages")}
+            isDarkMode={isDarkMode}
           />
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: FONT.bold,
-                fontSize: 18,
-                color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
-              }}
-            >
-              10K
-            </Text>
-            <Text
-              style={{
-                fontFamily: FONT.regular,
-                color: isDarkMode ? "#e0e0e0" : "#6f6f6f",
-                fontSize: 14,
-                marginTop: 6,
-              }}
-            >
-              {i18n.t("BDSPurchases")}
-            </Text>
-          </View>
+          <VerticalSeparator isDarkMode={isDarkMode} />
+          <InfoItem
+            mainText={"10K"}
+            subText={i18n.t("BDSPurchases")}
+            isDarkMode={isDarkMode}
+          />
         </View>
         {!book.isPurchased ? (
           <Button
@@ -440,235 +328,7 @@ export default function BookDetailsScreen({ route }) {
           }}
           style={{ marginTop: 30 }}
         />
-        <View
-          style={{
-            gap: 10,
-            marginTop: 20,
-            justifyContent: "space-around",
-            flexDirection: "row",
-          }}
-        >
-          <View style={{ gap: 10, alignItems: "center" }}>
-            <Text
-              style={{
-                fontSize: 50,
-                fontFamily: FONT.bold,
-                color: isDarkMode ? COLORS.white : COLORS.black,
-              }}
-            >
-              {book?.rating}
-            </Text>
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <Image
-                source={
-                  book?.rating >= 1
-                    ? icons.fullstar
-                    : book?.rating >= 0.5 && book?.rating < 1
-                    ? isDarkMode
-                      ? icons.halfstar
-                      : icons.halfstarLight
-                    : isDarkMode
-                    ? icons.emptystar
-                    : icons.emptystarLight
-                }
-                style={{ width: 20, height: 20, resizeMode: "contain" }}
-              />
-              <Image
-                source={
-                  book?.rating >= 2
-                    ? icons.fullstar
-                    : book?.rating >= 1.5 && book?.rating < 2
-                    ? isDarkMode
-                      ? icons.halfstar
-                      : icons.halfstarLight
-                    : isDarkMode
-                    ? icons.emptystar
-                    : icons.emptystarLight
-                }
-                style={{ width: 20, height: 20, resizeMode: "contain" }}
-              />
-              <Image
-                source={
-                  book?.rating >= 3
-                    ? icons.fullstar
-                    : book?.rating >= 2.5 && book?.rating < 3
-                    ? isDarkMode
-                      ? icons.halfstar
-                      : icons.halfstarLight
-                    : isDarkMode
-                    ? icons.emptystar
-                    : icons.emptystarLight
-                }
-                style={{ width: 20, height: 20, resizeMode: "contain" }}
-              />
-              <Image
-                source={
-                  book?.rating >= 4
-                    ? icons.fullstar
-                    : book?.rating >= 3.5 && book?.rating < 4
-                    ? isDarkMode
-                      ? icons.halfstar
-                      : icons.halfstarLight
-                    : isDarkMode
-                    ? icons.emptystar
-                    : icons.emptystarLight
-                }
-                style={{ width: 20, height: 20, resizeMode: "contain" }}
-              />
-              <Image
-                source={
-                  book?.rating === 5
-                    ? icons.fullstar
-                    : book?.rating >= 4.5 && book?.rating < 5
-                    ? isDarkMode
-                      ? icons.halfstar
-                      : icons.halfstarLight
-                    : isDarkMode
-                    ? icons.emptystar
-                    : icons.emptystarLight
-                }
-                style={{ width: 20, height: 20, resizeMode: "contain" }}
-              />
-            </View>
-            <Text
-              style={{
-                fontSize: 18,
-                fontFamily: FONT.bold,
-                color: isDarkMode ? COLORS.white : COLORS.black,
-              }}
-            >
-              ({book?.reviews?.length} {i18n.t("BDSReviews")})
-            </Text>
-          </View>
-          <View
-            style={{
-              width: 1,
-              backgroundColor: isDarkMode ? "#35383f" : "rgba(0,0,0,0.1)",
-            }}
-          />
-          <View style={{ justifyContent: "space-between" }}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 9,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: FONT.regular,
-                  color: isDarkMode ? COLORS.white : COLORS.black,
-                }}
-              >
-                5
-              </Text>
-              <ProgressBar
-                progress={countReviews(5)}
-                borderWidth={0}
-                color={COLORS.primary}
-                unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 9,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: FONT.regular,
-                  color: isDarkMode ? COLORS.white : COLORS.black,
-                }}
-              >
-                4
-              </Text>
-              <ProgressBar
-                progress={countReviews(4)}
-                borderWidth={0}
-                color={COLORS.primary}
-                unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 9,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: FONT.regular,
-                  color: isDarkMode ? COLORS.white : COLORS.black,
-                }}
-              >
-                3
-              </Text>
-              <ProgressBar
-                progress={countReviews(3)}
-                borderWidth={0}
-                color={COLORS.primary}
-                unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 9,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: FONT.regular,
-                  color: isDarkMode ? COLORS.white : COLORS.black,
-                }}
-              >
-                2
-              </Text>
-              <ProgressBar
-                progress={countReviews(2)}
-                borderWidth={0}
-                color={COLORS.primary}
-                unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 9,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: FONT.regular,
-                  color: isDarkMode ? COLORS.white : COLORS.black,
-                }}
-              >
-                1
-              </Text>
-              <ProgressBar
-                progress={countReviews(1)}
-                borderWidth={0}
-                color={COLORS.primary}
-                unfilledColor={isDarkMode ? "#35383f" : "#e0e0e0"}
-              />
-            </View>
-          </View>
-        </View>
+        <RatingView book={book} isDarkMode={isDarkMode} i18n={i18n} />
         <View
           style={{
             height: 1,
@@ -680,17 +340,12 @@ export default function BookDetailsScreen({ route }) {
         0 ? (
           <View style={{ marginBottom: 15 }}>
             <Review
-              author={user.firstName}
-              text={
+              review={
                 book.reviews.filter((r) => r.author.email === user.email)[0]
-                  .text
-              }
-              stars={
-                book.reviews.filter((r) => r.author.email === user.email)[0]
-                  .stars
               }
             />
-            <TouchableOpacity
+            <TransparentButton
+              style={{ marginTop: 15, marginBottom: 15 }}
               onPress={() => {
                 navigation.navigate("writereview", {
                   book,
@@ -699,30 +354,8 @@ export default function BookDetailsScreen({ route }) {
                   )[0],
                 });
               }}
-            >
-              <View
-                style={{
-                  marginTop: 15,
-                  marginBottom: 15,
-                  borderColor: COLORS.primary,
-                  borderWidth: 2,
-                  borderRadius: 25,
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontFamily: FONT.bold,
-                    color: COLORS.primary,
-                    textAlign: "center",
-                  }}
-                >
-                  {i18n.t("BDSUpdateReview")}
-                </Text>
-              </View>
-            </TouchableOpacity>
+              title={i18n.t("BDSUpdateReview")}
+            />
           </View>
         ) : (
           <View style={{ alignItems: "center" }}>
@@ -735,121 +368,47 @@ export default function BookDetailsScreen({ route }) {
             >
               {i18n.t("BDSRateThisBook")}
             </Text>
-            <View style={{ flexDirection: "row", gap: 20, marginTop: 15 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  setRateStars(1);
-                }}
-              >
-                <Image
-                  source={
-                    rateStars >= 1
-                      ? icons.fullstar
-                      : isDarkMode
-                      ? icons.ratestar
-                      : icons.ratestarLight
-                  }
-                  style={{ width: 33, height: 33, resizeMode: "contain" }}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setRateStars(2);
-                }}
-              >
-                <Image
-                  source={
-                    rateStars >= 2
-                      ? icons.fullstar
-                      : isDarkMode
-                      ? icons.ratestar
-                      : icons.ratestarLight
-                  }
-                  style={{ width: 33, height: 33, resizeMode: "contain" }}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setRateStars(3);
-                }}
-              >
-                <Image
-                  source={
-                    rateStars >= 3
-                      ? icons.fullstar
-                      : isDarkMode
-                      ? icons.ratestar
-                      : icons.ratestarLight
-                  }
-                  style={{ width: 33, height: 33, resizeMode: "contain" }}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setRateStars(4);
-                }}
-              >
-                <Image
-                  source={
-                    rateStars >= 4
-                      ? icons.fullstar
-                      : isDarkMode
-                      ? icons.ratestar
-                      : icons.ratestarLight
-                  }
-                  style={{ width: 33, height: 33, resizeMode: "contain" }}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setRateStars(5);
-                }}
-              >
-                <Image
-                  source={
-                    rateStars >= 5
-                      ? icons.fullstar
-                      : isDarkMode
-                      ? icons.ratestar
-                      : icons.ratestarLight
-                  }
-                  style={{ width: 33, height: 33, resizeMode: "contain" }}
-                />
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
+            <RatingInput
+              rateStars={rateStars}
+              setRateStars={setRateStars}
+              isDarkMode={isDarkMode}
+            />
+            <TransparentButton
+              style={{ marginTop: 15, marginBottom: 15 }}
               onPress={() => {
                 navigation.navigate("writereview", { book, stars: rateStars });
               }}
-            >
-              <View
-                style={{
-                  marginTop: 15,
-                  marginBottom: 15,
-                  borderColor: COLORS.primary,
-                  borderWidth: 2,
-                  borderRadius: 25,
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontFamily: FONT.bold,
-                    color: COLORS.primary,
-                  }}
-                >
-                  {i18n.t("BDSWriteReview")}
-                </Text>
-              </View>
-            </TouchableOpacity>
+              title={i18n.t("BDSWriteReview")}
+            />
           </View>
         )}
       </ScrollView>
     </View>
   );
 }
+
+const InfoItem = ({ mainText, subText, isDarkMode, icon }) => {
+  return (
+    <View style={styles.containerItem}>
+      <View style={styles.subContainerItem}>
+        <Text
+          style={[
+            styles.mainText,
+            { color: isDarkMode ? "#e0e0e0" : "#6f6f6f" },
+          ]}
+        >
+          {mainText}
+        </Text>
+        {icon && <Image source={icon} style={styles.icon} />}
+      </View>
+      <Text
+        style={[styles.subText, { color: isDarkMode ? "#e0e0e0" : "#6f6f6f" }]}
+      >
+        {subText}
+      </Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -861,5 +420,29 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  containerItem: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  subContainerItem: {
+    flexDirection: "row",
+    gap: 9,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mainText: {
+    fontFamily: FONT.bold,
+    fontSize: 18,
+  },
+  subText: {
+    fontFamily: FONT.regular,
+    fontSize: 14,
+    marginTop: 6,
+  },
+  icon: {
+    width: 17,
+    height: 17,
+    resizeMode: "contain",
   },
 });
