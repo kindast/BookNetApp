@@ -110,7 +110,7 @@ export default function LibraryScreen() {
               <LibraryBookCard
                 book={item}
                 onPress={() => {
-                  navigation.navigate("bookdetails", { id: item.id });
+                  navigation.navigate("bookreader", { book: item });
                 }}
                 style={{ marginBottom: 15 }}
               />

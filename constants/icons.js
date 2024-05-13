@@ -43,6 +43,8 @@ import viewFill from "../assets/icons/view-fill.png";
 import language from "../assets/icons/language.png";
 import smallArrow from "../assets/icons/smallArrow.png";
 import smallArrowLight from "../assets/icons/smallArrowLight.png";
+import checkbox from "../assets/icons/checkbox.png";
+import checkboxFill from "../assets/icons/checkbox-fill.png";
 
 export default {
   logo,
@@ -90,4 +92,6 @@ export default {
   language,
   smallArrow,
   smallArrowLight,
+  checkbox,
+  checkboxFill,
 };

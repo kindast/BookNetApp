@@ -5,6 +5,7 @@ import {
   Text,
   Image,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import { SIZES, FONT, COLORS, icons } from "../../constants";
 import { useSelector } from "react-redux";
@@ -16,6 +17,8 @@ import { I18n } from "i18n-js";
 export default function AboutBookScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
   const navigation = useNavigation();
+  const widthColumn =
+    (Dimensions.get("window").width - (SIZES.ph * 2 + 16)) / 2;
 
   const locale = useSelector((state) => state.settings.locale);
   const i18n = new I18n({
@@ -86,7 +89,7 @@ export default function AboutBookScreen({ route }) {
             marginBottom: 20,
           }}
         >
-          <View style={{ gap: 20 }}>
+          <View style={{ gap: 20, width: widthColumn }}>
             <Param title={i18n.t("ABSLanguage")} value={i18n.t("ABSRussian")} />
             <Param
               title={i18n.t("ABSAuthor")}
@@ -97,7 +100,7 @@ export default function AboutBookScreen({ route }) {
             <Param title={i18n.t("ABSPages")} value={book.pages} />
             <Param title={i18n.t("ABSPurchases")} value={"1K"} />
           </View>
-          <View style={{ gap: 20 }}>
+          <View style={{ gap: 20, width: widthColumn }}>
             <Param title={i18n.t("ABSAge")} value={"12+"} />
             <Param
               title={i18n.t("ABSPublisher")}
@@ -105,6 +108,7 @@ export default function AboutBookScreen({ route }) {
               selectValue
             />
             <Param title={"ISBN"} value={book.isbn} />
+            <Param title={i18n.t("ABSSize")} value={book.size} />
             <Param
               title={i18n.t("ABSGenres")}
               value={() => {
@@ -118,7 +122,6 @@ export default function AboutBookScreen({ route }) {
               }}
               selectValue
             />
-            <Param title={i18n.t("ABSSize")} value={book.size} />
           </View>
         </View>
       </ScrollView>
@@ -140,6 +143,7 @@ const Param = ({ title, value, selectValue = false }) => {
         {title}
       </Text>
       <Text
+        adjustsFontSizeToFit
         style={{
           fontSize: 16,
           fontFamily: FONT.regular,

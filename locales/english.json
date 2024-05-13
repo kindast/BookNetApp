@@ -74,6 +74,7 @@
   "SSResetButton": "Reset",
   "SSApplyButton": "Apply",
   "SSShowIn": "Show in",
+  "SSGenre": "Genre",
   "ASTitle": "Account",
   "ASLogout": "Logout",
   "LSTitle": "Purchased",
@@ -98,6 +99,7 @@
   "BDSRateThisBook": "Rate this book",
   "BDSWriteReview": "Write a Review",
   "BDSUpdateReview": "Update a Review",
+  "BDSErrorPurchaseBook": "To leave a review you must purchase the book",
   "WRSDescribeBook": "Describe Your Experience (Optional)",
   "WRSWarning": "Warning",
   "WRSPleaseRateTheBook": "Please rate the book",
@@ -106,5 +108,7 @@
   "WRSSubmit": "Submit",
   "CNPSTitle": "Create New Password 🔐",
   "CNPSSubtitle": "Enter your new password. If you forget it, then you have to do forgot password.",
-  "HSGenre": "Explore by Genre"
+  "HSGenre": "Explore by Genre",
+  "BRSFontSize": "Font Size",
+  "BRSFont": "Font"
 }

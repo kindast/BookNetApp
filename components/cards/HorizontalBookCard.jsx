@@ -78,6 +78,7 @@ export default function HorizontalBookCard({ book, onPress, style }) {
                 flexDirection: "row",
                 flexWrap: "wrap",
                 gap: 8,
+                maxWidth: 240,
               }}
             >
               {book?.genres?.map((genre, index) => (

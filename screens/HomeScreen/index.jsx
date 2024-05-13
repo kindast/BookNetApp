@@ -25,6 +25,7 @@ export default function HomeScreen() {
   const user = useSelector((state) => state.auth.user);
   const navigation = useNavigation();
   const [books, setBooks] = useState([]);
+  const [genres, setGenres] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const locale = useSelector((state) => state.settings.locale);
@@ -45,72 +46,21 @@ export default function HomeScreen() {
       });
   };
 
+  const fetchGenres = () => {
+    axios
+      .get(api + "/api/genres", {
+        headers: { Authorization: "Bearer " + user.token },
+      })
+      .then((response) => {
+        setGenres(response.data);
+      });
+  };
+
   useEffect(() => {
     fetchBooks();
+    fetchGenres();
   }, []);
 
-  const genres = [
-    {
-      title: "Romance",
-      image:
-        "https://images.unsplash.com/reserve/Af0sF2OS5S5gatqrKzVP_Silhoutte.jpg?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Thriller",
-      image:
-        "https://images.unsplash.com/photo-1609133506262-e6c083fb26b5?q=80&w=1949&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Inspiration",
-      image:
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Fantasy",
-      image:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1968&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Sci-Fi",
-      image:
-        "https://plus.unsplash.com/premium_photo-1682124860947-4c0ff8e0742f?q=80&w=1998&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Horror",
-      image:
-        "https://images.unsplash.com/photo-1601513445506-2ab0d4fb4229?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Mystery",
-      image:
-        "https://images.unsplash.com/photo-1482424917728-d82d29662023?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Psychlogy",
-      image:
-        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Comedy",
-      image:
-        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Action",
-      image:
-        "https://images.unsplash.com/photo-1506411393232-79727bc447af?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Adventure",
-      image:
-        "https://images.unsplash.com/photo-1551740994-7af69385a217?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Comics",
-      image:
-        "https://images.unsplash.com/photo-1601645191163-3fc0d5d64e35?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-  ];
   return (
     <View
       style={{
@@ -150,7 +100,9 @@ export default function HomeScreen() {
       </View>
       <View style={{ marginTop: 35, flexDirection: "row" }}>
         {isLoading ? (
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <View
+            style={{ alignItems: "center", justifyContent: "center", flex: 1 }}
+          >
             <ActivityIndicator color={COLORS.primary} size="large" />
           </View>
         ) : (
@@ -191,9 +143,12 @@ export default function HomeScreen() {
           data={genres}
           renderItem={({ item }) => (
             <GenreCard
-              title={item.title}
-              image={item.image}
+              genre={item}
+              key={item.id}
               style={{ marginRight: 12, width: 160, height: 80 }}
+              onPress={() => {
+                navigation.navigate("search", { genre: item });
+              }}
             />
           )}
         />

@@ -98,6 +98,7 @@ export default function LibraryBookCard({
           style={{
             alignItems: "center",
             justifyContent: "center",
+            display: "none",
           }}
         >
           <MenuTrigger>

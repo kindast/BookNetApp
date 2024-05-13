@@ -30,6 +30,7 @@ import Toast from "react-native-toast-message";
 import { MenuProvider } from "react-native-popup-menu";
 import { hideAsync, preventAutoHideAsync } from "expo-splash-screen";
 import { getLocales } from "expo-localization";
+import BookReaderProvider from "./screens/BookReaderScreen";
 
 const Stack = createNativeStackNavigator();
 preventAutoHideAsync();
@@ -111,7 +112,10 @@ export default function App() {
                   component={BookDetailsScreen}
                 />
                 <Stack.Screen name="aboutbook" component={AboutBookScreen} />
-                <Stack.Screen name="bookreader" component={BookReaderScreen} />
+                <Stack.Screen
+                  name="bookreader"
+                  component={BookReaderProvider}
+                />
                 <Stack.Screen name="reviews" component={ReviewsScreen} />
                 <Stack.Screen
                   name="writereview"

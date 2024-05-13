@@ -376,6 +376,16 @@ export default function BookDetailsScreen({ route }) {
             <TransparentButton
               style={{ marginTop: 15, marginBottom: 15 }}
               onPress={() => {
+                if (!book.isPurchased) {
+                  Toast.show({
+                    text1: i18n.t("WRSWarning"),
+                    text2: i18n.t("BDSErrorPurchaseBook"),
+                    position: "bottom",
+                    type: "info",
+                    hideAfter: 100,
+                  });
+                  return;
+                }
                 navigation.navigate("writereview", { book, stars: rateStars });
               }}
               title={i18n.t("BDSWriteReview")}
