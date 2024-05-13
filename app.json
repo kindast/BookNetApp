@@ -1,22 +1,12 @@
 {
   "expo": {
-    "name": "BookNetApp",
-    "slug": "BookNetApp",
-    "version": "1.0.0",
+    "name": "BookNet",
+    "slug": "BookNet",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/icons/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff",
-      "dark": {
-        "image": "./assets/icons/splash.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#000000"
-      }
-    },
     "assetBundlePatterns": ["**/*"],
+    "primaryColor": "#f89300",
     "ios": {
       "supportsTablet": true
     },
@@ -25,7 +15,17 @@
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.k1ndast.BookNetApp"
+      "package": "com.k1ndast.BookNetApp",
+      "splash": {
+        "image": "./assets/icons/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/icons/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      }
     },
     "plugins": [
       [
