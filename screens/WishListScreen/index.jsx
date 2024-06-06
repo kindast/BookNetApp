@@ -79,12 +79,6 @@ export default function WishListScreen() {
             {i18n.t("WLSTitle")}
           </Text>
         </View>
-        <TouchableOpacity>
-          <Image
-            source={isDarkMode ? icons.searchLight : icons.search}
-            style={{ width: 25, height: 25 }}
-          />
-        </TouchableOpacity>
       </View>
       <View style={{ marginTop: 15, flex: 1 }}>
         {isLoading ? (

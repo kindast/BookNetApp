@@ -39,6 +39,10 @@ export default function LibraryScreen() {
       .then((response) => {
         setBooks(response.data);
         setIsLoading(false);
+      })
+      .catch((err) => {
+        setBooks([]);
+        setIsLoading(false);
       });
   };
 
@@ -74,12 +78,6 @@ export default function LibraryScreen() {
             {i18n.t("LSTitle")}
           </Text>
         </View>
-        <TouchableOpacity>
-          <Image
-            source={isDarkMode ? icons.searchLight : icons.search}
-            style={{ width: 25, height: 25 }}
-          />
-        </TouchableOpacity>
       </View>
       <View style={{ marginTop: 15, flex: 1 }}>
         {isLoading ? (
