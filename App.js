@@ -14,13 +14,15 @@ import {
   OTPCodeScreen,
   GenresScreen,
   BookDetailsScreen,
-  BookReaderScreen,
   CreateNewPasswordScreen,
   AboutBookScreen,
   ReviewsScreen,
   WriteReviewScreen,
   SearchScreen,
   LanguageScreen,
+  PaymentMethodScreen,
+  AddBankCardScreen,
+  PaymentTotalScreen,
 } from "./screens";
 import { setIsDarkMode, setLocale } from "./redux/slices/settingsSlice";
 import { setUser } from "./redux/slices/authSlice";
@@ -31,6 +33,8 @@ import { MenuProvider } from "react-native-popup-menu";
 import { hideAsync, preventAutoHideAsync } from "expo-splash-screen";
 import { getLocales } from "expo-localization";
 import BookReaderProvider from "./screens/BookReaderScreen";
+import axios from "axios";
+import { api } from "./constants";
 
 const Stack = createNativeStackNavigator();
 preventAutoHideAsync();
@@ -65,6 +69,21 @@ export default function App() {
       const userJson = await AsyncStorage.getItem("user");
       let user = userJson != null ? JSON.parse(userJson) : null;
       user && dispatch(setUser(user));
+
+      if (user) {
+        axios
+          .get(api + "/api/check-token", {
+            headers: { Authorization: "Bearer " + user.token },
+          })
+          .then(async (response) => {})
+          .catch((error) => {
+            if (error.response.status === 500) {
+              AsyncStorage.removeItem("user");
+              AsyncStorage.clear();
+              dispatch(setUser(null));
+            }
+          });
+      }
 
       let locale = await AsyncStorage.getItem("locale");
       if (locale === null) {
@@ -110,6 +129,18 @@ export default function App() {
                 <Stack.Screen
                   name="bookdetails"
                   component={BookDetailsScreen}
+                />
+                <Stack.Screen
+                  name="paymentmethod"
+                  component={PaymentMethodScreen}
+                />
+                <Stack.Screen
+                  name="paymenttotal"
+                  component={PaymentTotalScreen}
+                />
+                <Stack.Screen
+                  name="addbankcard"
+                  component={AddBankCardScreen}
                 />
                 <Stack.Screen name="aboutbook" component={AboutBookScreen} />
                 <Stack.Screen

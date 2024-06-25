@@ -158,6 +158,7 @@ export default function AccountScreen() {
       <TouchableOpacity
         onPress={async () => {
           await AsyncStorage.removeItem("user");
+          AsyncStorage.clear();
           dispatch(setUser(null));
         }}
         style={{ marginTop: 25 }}

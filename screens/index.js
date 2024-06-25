@@ -18,6 +18,9 @@ import AccountScreen from "./AccountScreen";
 import WriteReviewScreen from "./WriteReviewScreen";
 import SearchScreen from "./SearchScreen";
 import LanguageScreen from "./LanguageScreen";
+import PaymentMethodScreen from "./PaymentMethodScreen";
+import AddBankCardScreen from "./AddBankCardScreen";
+import PaymentTotalScreen from "./PaymentTotalScreen";
 
 export {
   BookDetailsScreen,
@@ -40,4 +43,7 @@ export {
   WriteReviewScreen,
   SearchScreen,
   LanguageScreen,
+  PaymentMethodScreen,
+  AddBankCardScreen,
+  PaymentTotalScreen,
 };

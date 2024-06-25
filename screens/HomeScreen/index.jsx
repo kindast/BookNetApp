@@ -9,16 +9,18 @@ import {
   View,
 } from "react-native";
 import { COLORS, FONT, SIZES, api, icons } from "../../constants";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BookCard from "../../components/cards/BookCard";
 import GenreCard from "../../components/cards/GenreCard";
-import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import DetailsButton from "../../components/controls/DetailsButton";
 import axios from "axios";
 import english from "../../locales/english.json";
 import russian from "../../locales/russian.json";
 import { I18n } from "i18n-js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUser } from "../../redux/slices/authSlice";
 
 export default function HomeScreen() {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
@@ -27,6 +29,7 @@ export default function HomeScreen() {
   const [books, setBooks] = useState([]);
   const [genres, setGenres] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
 
   const locale = useSelector((state) => state.settings.locale);
   const i18n = new I18n({
@@ -43,6 +46,12 @@ export default function HomeScreen() {
       .then((response) => {
         setBooks(response.data);
         setIsLoading(false);
+      })
+      .catch((error) => {
+        if (error.response.status === 500) {
+          AsyncStorage.clear();
+          dispatch(setUser(null));
+        }
       });
   };
 
@@ -56,11 +65,12 @@ export default function HomeScreen() {
       });
   };
 
-  useEffect(() => {
-    fetchBooks();
-    fetchGenres();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchBooks();
+      fetchGenres();
+    }, [])
+  );
   return (
     <View
       style={{

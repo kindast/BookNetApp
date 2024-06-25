@@ -45,6 +45,9 @@ import smallArrow from "../assets/icons/smallArrow.png";
 import smallArrowLight from "../assets/icons/smallArrowLight.png";
 import checkbox from "../assets/icons/checkbox.png";
 import checkboxFill from "../assets/icons/checkbox-fill.png";
+import mir from "../assets/icons/mir.png";
+import sbp from "../assets/icons/sbp.png";
+import addCard from "../assets/icons/addCard.png";
 
 export default {
   logo,
@@ -94,4 +97,7 @@ export default {
   smallArrowLight,
   checkbox,
   checkboxFill,
+  mir,
+  sbp,
+  addCard,
 };

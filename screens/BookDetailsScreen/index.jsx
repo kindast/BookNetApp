@@ -9,7 +9,7 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { COLORS, FONT, SIZES, api, icons } from "../../constants";
 import { useCallback, useState } from "react";
 import Button from "../../components/controls/Button";
@@ -25,6 +25,8 @@ import TransparentButton from "../../components/controls/TransparentButton";
 import Review from "../../components/controls/Review";
 import VerticalSeparator from "../../components/controls/VerticalSeparator";
 import HorizontalSeparator from "../../components/controls/HorizontalSeparator";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUser } from "../../redux/slices/authSlice";
 
 export default function BookDetailsScreen({ route }) {
   const isDarkMode = useSelector((state) => state.settings.isDarkMode);
@@ -35,6 +37,7 @@ export default function BookDetailsScreen({ route }) {
   const [book, setBook] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const locale = useSelector((state) => state.settings.locale);
+  const dispatch = useDispatch();
   const i18n = new I18n({
     en: english,
     ru: russian,
@@ -57,6 +60,12 @@ export default function BookDetailsScreen({ route }) {
       .then((response) => {
         setBook(response.data);
         setIsLoading(false);
+      })
+      .catch((error) => {
+        if (error.response.status === 500) {
+          AsyncStorage.clear();
+          dispatch(setUser(null));
+        }
       });
   };
 
@@ -262,7 +271,7 @@ export default function BookDetailsScreen({ route }) {
           />
           <VerticalSeparator isDarkMode={isDarkMode} />
           <InfoItem
-            mainText={"10K"}
+            mainText={book?.purchases}
             subText={i18n.t("BDSPurchases")}
             isDarkMode={isDarkMode}
           />
@@ -272,25 +281,7 @@ export default function BookDetailsScreen({ route }) {
             title={i18n.t("BDSBuy") + " " + book?.price + "₽"}
             style={{ marginTop: 25 }}
             onPress={() => {
-              axios
-                .get(api + "/api/buy-book", {
-                  params: { id: book.id },
-                  headers: { Authorization: "Bearer " + user.token },
-                })
-                .then((response) => {
-                  setBook((prevState) => ({
-                    ...prevState,
-                    isPurchased: true,
-                  }));
-                  Toast.show({
-                    type: "success",
-                    text1: i18n.t("BDSSuccess"),
-                    text2: i18n.t("BDSAddBookToAccount"),
-                    position: "bottom",
-                    hideAfter: 100,
-                  });
-                })
-                .catch((error) => {});
+              navigation.navigate("paymentmethod", { book: book });
             }}
           />
         ) : (

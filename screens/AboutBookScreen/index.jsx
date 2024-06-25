@@ -98,7 +98,7 @@ export default function AboutBookScreen({ route }) {
             />
             <Param title={i18n.t("ABSPublishedOn")} value={book.formatDate} />
             <Param title={i18n.t("ABSPages")} value={book.pages} />
-            <Param title={i18n.t("ABSPurchases")} value={"1K"} />
+            <Param title={i18n.t("ABSPurchases")} value={book.purchases} />
           </View>
           <View style={{ gap: 20, width: widthColumn }}>
             <Param title={i18n.t("ABSAge")} value={"12+"} />
